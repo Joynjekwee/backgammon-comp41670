@@ -36,5 +36,23 @@ public class Game {
 
             System.out.println("Roll Again");
         }
+
+    }
+
+    public static Player switchPlayer(Player currentPlayer, Player player1, Player player2) {
+        // If current player is player1, switch to player2, otherwise switch to player1
+        if (currentPlayer == player1) {
+            System.out.println("The Current Player is Player: " + player2.getName());
+            return player2;
+        } else {
+            System.out.println("The Current Player is Player: " + player1.getName());
+            return player1;
+        }
+
     }
 }
+
+
+
+
+
