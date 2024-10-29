@@ -1,30 +1,28 @@
 public class Dice {
 
-    private int[] numbers;
+    private int die1;
+    private int die2;
     private final int NUMOFDICE = 2;
-    public Dice() {
-        numbers = new int[]{1,1};
-    }
+
 
     public void rollSingleDie(){
-        numbers[0] = (int)(Math.random()*6+1);
+        die1 = (int)(Math.random()*6+1);
     }
 
-    public void rollDice(){
-        for(int i = 0; i < NUMOFDICE; i++){
-            numbers[i] = (int)(Math.random()*6+1);
-        }
+    public void roll(){
+        die1 = (int)(Math.random()*6+1);
+        die2 = (int)(Math.random()*6+1);
     }
 
-    public int getDie(int index){
-        if (index >= 0 && index < NUMOFDICE) {
-            return numbers[index];
-        } else {
-            throw new IllegalArgumentException("Invalid die index");
-        }
+    public int getDie1(){
+        return die1;
     }
 
-    public String toString(){
-        return "Dice 1: " + numbers[0] + ", Dice 2: " + numbers[1];
+    public int getDie2(){
+        return die2;
+    }
+
+    public String getDiceResults(){
+        return "Dice 1: " + die1 + ", Dice 2: " + die2;
     }
 }

@@ -14,9 +14,11 @@ public class GameTest {
         Player p2 = new Player(userName2);
         Game game = new Game(p1, p2);
 
-        game.whoGoesFirst();
+        game.start();
+        Player currentPlayer = game.whoGoesFirst();
 
         boolean stillPlaying = true;
+
         while (stillPlaying) {
             System.out.println("User Input: ");
             String userInput = in.nextLine();

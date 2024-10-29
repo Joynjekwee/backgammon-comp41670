@@ -10,11 +10,22 @@ public class Player{
 
     public int rollDieToStart(){
         dice.rollSingleDie();
-        return dice.getDie(0);
+        return dice.getDie1();
     }
 
-    public void roll(){
-        dice.rollDice();
+    public void rollDice(){
+        dice.roll();
+    }
+    public String getDiceResults(){
+        return dice.getDiceResults();
+    }
+
+    public int getDie1() {
+        return dice.getDie1();
+    }
+
+    public int getDie2() {
+        return dice.getDie2();
     }
 
     public String getName(){
