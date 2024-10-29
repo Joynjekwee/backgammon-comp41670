@@ -25,6 +25,22 @@ public class GameTest {
 
             switch (userInput) {
                 case "roll":
+                    currentPlayer.rollDice();
+                    String dieResults = currentPlayer.getDiceResults();
+                    System.out.println("Roll Result:" + dieResults);
+                    currentPlayer = Game.switchPlayer(currentPlayer,p1,p2);
+                    break;
+
+                case "quit":
+                    System.out.println("Quitting Game Now:");
+                    stillPlaying = false;
+                    break;
+
+                    default:
+                        System.out.println("Invalid input, please type 'roll' or 'quit'.");
+                        break;
+
+
 
             }
 
