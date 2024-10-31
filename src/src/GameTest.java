@@ -4,10 +4,11 @@ public class GameTest {
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-
-        System.out.println("User Name player 1: ");
+        System.out.println("Welcome to Backgammon");
+        System.out.println();
+        System.out.print("User Name player 1: ");
         String userName1 = in.nextLine();
-        System.out.println("User Name player 2: ");
+        System.out.print("User Name player 2: ");
         String userName2 = in.nextLine();
 
         Player p1 = new Player(userName1);
@@ -20,14 +21,14 @@ public class GameTest {
         boolean stillPlaying = true;
 
         while (stillPlaying) {
-            System.out.println("User Input: ");
+            System.out.print("User Input: ");
             String userInput = in.nextLine();
 
             switch (userInput) {
                 case "roll":
                     currentPlayer.rollDice();
                     String dieResults = currentPlayer.getDiceResults();
-                    System.out.println("Roll Result:" + dieResults);
+                    System.out.println("Roll Result: " + dieResults);
                     currentPlayer = Game.switchPlayer(currentPlayer,p1,p2);
                     break;
 
@@ -40,13 +41,7 @@ public class GameTest {
                         System.out.println("Invalid input, please type 'roll' or 'quit'.");
                         break;
 
-
-
             }
-
-
-
-
         }
     }
 }

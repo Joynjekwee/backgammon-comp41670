@@ -10,10 +10,13 @@ public class Game {
     }
 
     public void start(){
-        System.out.println("Welcome to Backgammon");
+        System.out.println();
         System.out.print("Player 1: " + player1.getName() + "\t\t\t\t" + "Player 2: " + player2.getName() + "\n");
+        System.out.println();
         board.display();
     }
+
+
     public Player whoGoesFirst(){
         System.out.println("Each player will roll to see who goes first.");
         int player1rolled;
@@ -40,6 +43,7 @@ public class Game {
     }
 
     public static Player switchPlayer(Player currentPlayer, Player player1, Player player2) {
+
         // If current player is player1, switch to player2, otherwise switch to player1
         if (currentPlayer == player1) {
             System.out.println("The Current Player is Player: " + player2.getName());

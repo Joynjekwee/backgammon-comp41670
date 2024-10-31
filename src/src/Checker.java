@@ -16,6 +16,8 @@ public class Checker {
         return count;
     }
 
+    public  String getSymbol() {return player;}
+
     public String toString() {
         if (count > 0) {
             return player;
