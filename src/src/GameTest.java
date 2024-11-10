@@ -30,6 +30,7 @@ public class GameTest {
                     String dieResults = currentPlayer.getDiceResults();
                     System.out.println("Roll Result: " + dieResults);
                     currentPlayer = Game.switchPlayer(currentPlayer,p1,p2);
+                    // Game.showLegalMoves
                     break;
 
                 case "quit":

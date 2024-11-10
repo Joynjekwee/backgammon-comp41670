@@ -1,6 +1,12 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Board {
     private Checker[] board;
-
+    private List<Checker> barX = new ArrayList<>();
+    private List<Checker> barO = new ArrayList<>();
+    private List<Checker> offX = new ArrayList<>();
+    private List<Checker> offO = new ArrayList<>();
 
     public Board() {
 
