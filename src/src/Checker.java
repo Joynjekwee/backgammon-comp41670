@@ -7,6 +7,9 @@ public class Checker {
         this.count = count;
     }
 
+    public Checker(String player) {
+        this.player = player;
+    }
     public String getPlayer() {
         return player;
     }
