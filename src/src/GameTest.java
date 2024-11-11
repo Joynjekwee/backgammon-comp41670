@@ -27,20 +27,23 @@ public class GameTest {
                 case "roll":
                     currentPlayer.rollDice();
                     String dieResults = currentPlayer.getDiceResults();
-                    System.out.println("Roll Result:" + dieResults);
-                    currentPlayer = Game.switchPlayer(currentPlayer,p1,p2);
+                    System.out.println("Roll Result: " + dieResults);
+                    currentPlayer = Game.switchPlayer(currentPlayer, p1, p2);
+                    break;
+
+                case "pip":
+
+                    game.displayPipCounts();
                     break;
 
                 case "quit":
-                    System.out.println("Quitting Game Now:");
+                    System.out.println("Quitting Game Now.");
                     stillPlaying = false;
                     break;
 
-                    default:
-                        System.out.println("Invalid input, please type 'roll' or 'quit'.");
-                        break;
-
-
+                default:
+                    System.out.println("Invalid input, please type 'roll', 'pip', or 'quit'.");
+                    break;
 
             }
 
@@ -49,4 +52,6 @@ public class GameTest {
 
         }
     }
+
+
 }
