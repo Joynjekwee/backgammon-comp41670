@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,13 +34,13 @@ public class Dice {
     }
 
     // Returns the moves allowed by the dice roll
-    public List<Integer> getMoves() {
+    public ArrayList<Integer> getMoves() {
         if (isDouble()) {
             // If doubles, return four moves of the same value
-            return Arrays.asList(die1, die1, die1, die1);
+            return new ArrayList<Integer>(Arrays.asList(die1, die1, die1, die1));
         } else {
             // If not doubles, return the two dice values as the moves
-            return Arrays.asList(die1, die2);
+            return new ArrayList<Integer>(Arrays.asList(die1, die2));
         }
     }
 

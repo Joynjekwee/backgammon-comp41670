@@ -8,7 +8,7 @@ public class Game {
     private Board board;
     private Scanner in = new Scanner(System.in);
     private Dice dice = new Dice();
-    private List<Integer> listOfDie = new ArrayList<>();
+    private ArrayList<Integer> diceValues = new ArrayList<>();
     private String winner;
 
     public Game(Player player1, Player player2) {
@@ -67,7 +67,7 @@ public class Game {
         boolean stillPlaying = true;
 
         while (stillPlaying) {
-            printCommands();
+
             System.out.print("User Input: ");
             String userInput = in.nextLine();
 
@@ -76,9 +76,14 @@ public class Game {
                     dice.roll();
                     String dieResults = dice.getDiceResults();
                     System.out.println("Roll Result: " + dieResults);
-                    listOfDie = dice.getMoves();
+                    diceValues = dice.getMoves();
+                    ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
+                    printLegalMoves(legalMoves);
+                    int choice = playerSelectsMoveToPlay(legalMoves);
+                    playMove(choice, legalMoves);
                     //System.out.println("Moves: " + dice.getMoves());
                     currentPlayer = switchPlayer(currentPlayer,player1,player2);
+                    board.display();
                     break;
 
                 case "quit":
@@ -87,20 +92,67 @@ public class Game {
                     stillPlaying = false;
                     break;
 
+                case "hint":
+                    printCommands();
                 default:
                     System.out.println("Invalid input, please type commands available.");
                     break;
 
             }
 
-            if(isGameOver())
+            if(isGameOver()){
                 System.out.println("Game Over!");
                 System.out.println("Congratulations! " + winner + " won!");
-               printEndOfGameScore();
+                printEndOfGameScore();
                 stillPlaying = false;
+            }
+
+
+
         }
     }
 
+
+    public int playerSelectsMoveToPlay(ArrayList<String> legalMoves) {
+
+        System.out.println();
+        int moveSelected;
+        while (true) {
+            System.out.println("Please select a move to play (input number): ");
+             moveSelected = in.nextInt();
+            //if(!legalMoves.contains(moveSelected)) <- this is wrong ???
+            if(!(moveSelected >= 1 && moveSelected <= legalMoves.size()))
+                System.out.println("Invalid move!");
+            else
+                break;
+        }
+
+        return moveSelected;
+
+
+    }
+
+    public void playMove(int choice, ArrayList<String> legalMoves) {
+
+
+        String move = legalMoves.get(choice-1);
+        //String[] points = move.split(" -> ");
+        //int startPoint = Integer.parseInt(points[0])-1;
+        //int endPoint = Integer.parseInt(points[1])-1;
+        String[] parts = move.split(", ");
+        int startPoint = Integer.parseInt(parts[0].replaceAll("[^0-9]", "").trim()) - 1;
+        int endPoint = Integer.parseInt(parts[1].replaceAll("[^0-9]", "").trim()) - 1;
+
+
+        board.executeMove(startPoint,endPoint);
+
+
+    }
+    public void printLegalMoves(ArrayList<String> legalMoves){
+        for(int i = 0; i < legalMoves.size(); i++){
+            System.out.println((i+1) + ". " + legalMoves.get(i));
+        }
+    }
     public void printEndOfGameScore(){
         System.out.println(player1.getName() + " score: " + player1.getScore());
         System.out.println(player2.getName() + " score: " + player2.getScore());
