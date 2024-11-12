@@ -10,6 +10,7 @@ public class Move {
     }
 
     public boolean legalMove(int startpt, int endpt, Checker checker){
+
         boolean legal = true;
         return legal;
     }

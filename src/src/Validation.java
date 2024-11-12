@@ -1,11 +1,10 @@
 import java.util.ArrayList;
-import java.util.List;
 
 public class Validation {
     private Board board;
 
-    public Validation(Board board) {
-        this.board = board;
+    public Validation(ArrayList<ArrayList<Checker>> board) {
+       // this.board = board;
     }
 
     // Check if there are checkers on the bar for a specific player
@@ -19,6 +18,7 @@ public class Validation {
     }
 
     public ArrayList<String> canWeMakeAMove(int start, int die1, int die2, Player player) {
+
         ArrayList<String> potentialLegalMoves = new ArrayList<>();
         int[] newPositions = {
                 start + die1,
@@ -26,12 +26,12 @@ public class Validation {
                 start + die1 + die2
         };
 
-        ArrayList<ArrayList<Checker>> boardState = board.getBoard();
+        ArrayList<ArrayList<Checker>> boardst  = board.getBoard();
         String playerSymbol = player.getSymbol();
 
         for (int newPos : newPositions) {
-            if (newPos >= 0 && newPos < boardState.size()) { // Check if within board bounds
-                ArrayList<Checker> checkersAtNewPos = boardState.get(newPos);
+            if (newPos >= 0 && newPos < boardst.size()) { // Check if within board bounds
+                ArrayList<Checker> checkersAtNewPos = boardst.get(newPos);
                 String opponentSymbol = playerSymbol.equals("X") ? "O" : "X";
 
                 int opponentCheckerCount = 0;
@@ -56,9 +56,5 @@ public class Validation {
         return potentialLegalMoves; // Return potential moves (empty if none found)
     }
 }
-
-
-
-
 
 
