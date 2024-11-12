@@ -9,6 +9,7 @@ public class Game {
     private Scanner in = new Scanner(System.in);
     private Dice dice = new Dice();
     private List<Integer> listOfDie = new ArrayList<>();
+    private String winner;
 
     public Game(Player player1, Player player2) {
         this.player1 = player1;
@@ -18,7 +19,8 @@ public class Game {
 
     public void start(){
         System.out.println();
-        System.out.print("Player 1: " + player1.getName() + "\t\t\t\t" + "Player 2: " + player2.getName() + "\n");
+        System.out.print("Player 1: " + player1.getName() + " (" + player1.getSymbol() + ")" + "\t\t\t\t"
+                + "Player 2: " + player2.getName() + " (" + player2.getSymbol() + ")" + "\n");
         System.out.println();
         board.display();
     }
@@ -57,6 +59,7 @@ public class Game {
         System.out.println("=========================================================");
         System.out.println();
     }
+
     public void playGame(){
         start();
         Player currentPlayer = whoGoesFirst();
@@ -68,7 +71,7 @@ public class Game {
             System.out.print("User Input: ");
             String userInput = in.nextLine();
 
-            switch (userInput) {
+            switch (userInput.toLowerCase()) {
                 case "roll":
                     dice.roll();
                     String dieResults = dice.getDiceResults();
@@ -80,15 +83,39 @@ public class Game {
 
                 case "quit":
                     System.out.println("Quitting Game Now:");
+                    printEndOfGameScore();
                     stillPlaying = false;
                     break;
 
                 default:
-                    System.out.println("Invalid input, please type 'roll' or 'quit'.");
+                    System.out.println("Invalid input, please type commands available.");
                     break;
 
             }
+
+            if(isGameOver())
+                System.out.println("Game Over!");
+                System.out.println("Congratulations! " + winner + " won!");
+               printEndOfGameScore();
+                stillPlaying = false;
         }
+    }
+
+    public void printEndOfGameScore(){
+        System.out.println(player1.getName() + " score: " + player1.getScore());
+        System.out.println(player2.getName() + " score: " + player2.getScore());
+    }
+
+    public boolean isGameOver(){
+        if(board.getBearoffAreaPlayer1().size() == 15){
+            winner = player1.getName();
+            return true;
+        }
+        else if (board.getBearoffAreaPlayer2().size() == 15) {
+            winner = player2.getName();
+            return true;
+        }
+        return false;
     }
 
     public static Player switchPlayer(Player currentPlayer, Player player1, Player player2) {
@@ -101,7 +128,6 @@ public class Game {
             System.out.println("The Current Player is Player: " + player1.getName());
             return player1;
         }
-
     }
 }
 

@@ -11,8 +11,10 @@ public class GameTest {
         System.out.print("User Name player 2: ");
         String userName2 = in.nextLine();
 
-        Player p1 = new Player(userName1);
-        Player p2 = new Player(userName2);
+        String player1Symbol = "X";
+        String player2Symbol = "O";
+        Player p1 = new Player(userName1, player1Symbol);
+        Player p2 = new Player(userName2, player2Symbol);
         Game game = new Game(p1, p2);
 
         game.playGame();

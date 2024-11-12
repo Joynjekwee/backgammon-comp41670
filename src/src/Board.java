@@ -3,15 +3,22 @@ import java.util.List;
 
 public class Board {
     private ArrayList<ArrayList<Checker>> board;
-    private List<Checker> barX = new ArrayList<>();
-    private List<Checker> barO = new ArrayList<>();
-    private List<Checker> offX = new ArrayList<>();
-    private List<Checker> offO = new ArrayList<>();
+    private ArrayList<Checker> barX = new ArrayList<>();
+    private ArrayList<Checker> barO = new ArrayList<>();
+    private ArrayList<Checker> bearoffAreaPlayer1 = new ArrayList<>();
+    private ArrayList<Checker> bearoffAreaPlayer2 = new ArrayList<>();
 
     public Board() {
         initialize();
     }
 
+    public ArrayList<Checker> getBearoffAreaPlayer1() {
+        return bearoffAreaPlayer1;
+    }
+
+    public ArrayList<Checker> getBearoffAreaPlayer2() {
+        return bearoffAreaPlayer2;
+    }
     // Initializes the board with some example checkers
     private void initialize() {
         board = new ArrayList<>();
