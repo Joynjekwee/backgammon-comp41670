@@ -15,34 +15,7 @@ public class GameTest {
         Player p2 = new Player(userName2);
         Game game = new Game(p1, p2);
 
-        game.start();
-        Player currentPlayer = game.whoGoesFirst();
+        game.playGame();
 
-        boolean stillPlaying = true;
-
-        while (stillPlaying) {
-            System.out.print("User Input: ");
-            String userInput = in.nextLine();
-
-            switch (userInput) {
-                case "roll":
-                    currentPlayer.rollDice();
-                    String dieResults = currentPlayer.getDiceResults();
-                    System.out.println("Roll Result: " + dieResults);
-                    currentPlayer = Game.switchPlayer(currentPlayer,p1,p2);
-                    // Game.showLegalMoves
-                    break;
-
-                case "quit":
-                    System.out.println("Quitting Game Now:");
-                    stillPlaying = false;
-                    break;
-
-                    default:
-                        System.out.println("Invalid input, please type 'roll' or 'quit'.");
-                        break;
-
-            }
-        }
     }
 }
