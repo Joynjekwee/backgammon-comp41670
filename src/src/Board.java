@@ -12,6 +12,18 @@ public class Board {
         initialize();
     }
 
+    public ArrayList<Checker> getBarX() {
+        return barX;
+    }
+    public ArrayList<Checker> getBarO() {
+        return barO;
+    }
+
+    // Getter for the main board array
+    public ArrayList<ArrayList<Checker>> getBoard() {
+        return board;
+    }
+
     public ArrayList<Checker> getBearoffAreaPlayer1() {
         return bearoffAreaPlayer1;
     }
