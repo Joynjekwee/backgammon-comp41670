@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Game {
 
-    private Player player1, player2;
+    private Player player1, player2,currentPlayer;
     private Board board;
     private Scanner in = new Scanner(System.in);
     private Dice dice = new Dice();
@@ -62,7 +62,7 @@ public class Game {
 
     public void playGame(){
         start();
-        Player currentPlayer = whoGoesFirst();
+         currentPlayer = whoGoesFirst();
 
         boolean stillPlaying = true;
 
@@ -134,17 +134,25 @@ public class Game {
 
     public void playMove(int choice, ArrayList<String> legalMoves) {
 
+        int startPoint;
+        int endPoint;
 
         String move = legalMoves.get(choice-1);
-        //String[] points = move.split(" -> ");
-        //int startPoint = Integer.parseInt(points[0])-1;
-        //int endPoint = Integer.parseInt(points[1])-1;
+       if(move.equals("-1")){
+           return;
+       }
         String[] parts = move.split(", ");
-        int startPoint = Integer.parseInt(parts[0].replaceAll("[^0-9]", "").trim()) - 1;
-        int endPoint = Integer.parseInt(parts[1].replaceAll("[^0-9]", "").trim()) - 1;
+       if(parts[0].contains("Bar")) {
+           startPoint = 0;
+           endPoint = Integer.parseInt(parts[1].replaceAll("[^0-9]", "").trim()) - 1;
+       //    board.executeMove(startPoint,endPoint, currentPlayer);
+       } else {
+           startPoint = Integer.parseInt(parts[0].replaceAll("[^0-9]", "").trim()) - 1;
+           endPoint = Integer.parseInt(parts[1].replaceAll("[^0-9]", "").trim()) - 1;
+       }
 
 
-        board.executeMove(startPoint,endPoint);
+        board.executeMove(startPoint,endPoint, currentPlayer);
 
 
     }

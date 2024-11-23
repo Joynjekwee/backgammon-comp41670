@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+/*import java.util.ArrayList;
 
 public class Validation {
     private Board board;
@@ -10,9 +10,9 @@ public class Validation {
     // Check if there are checkers on the bar for a specific player
     public boolean areThereCheckersOnTheBar(Player player) {
         if (player.getSymbol().equals("X")) {
-            return board.getBarX() != null && !board.getBarX().isEmpty();
+            return !board.getBarX().isEmpty();
         } else if (player.getSymbol().equals("O")) {
-            return board.getBarO() != null && !board.getBarO().isEmpty();
+            return !board.getBarO().isEmpty();
         }
         return false;
     }
@@ -58,3 +58,4 @@ public class Validation {
 }
 
 
+*/
