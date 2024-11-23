@@ -7,7 +7,7 @@ public class Board {
     private ArrayList<Checker> barO = new ArrayList<>();
     private ArrayList<Checker> bearoffAreaPlayer1 = new ArrayList<>();
     private ArrayList<Checker> bearoffAreaPlayer2 = new ArrayList<>();
-    private Validation validate = new Validation(board);
+   // private Validation validate = new Validation(board);
     private int countXOnBar = 0;
     private int countOOnBar = 0;
 
@@ -18,11 +18,11 @@ public class Board {
     public ArrayList<Checker> getBarX() {
         return barX;
     }
-    public ArrayList<Checker> getBarO() {
+
+    public ArrayList<Checker> getBarO(){
         return barO;
     }
 
-    // Getter for the main board array
     public ArrayList<ArrayList<Checker>> getBoard() {
         return board;
     }
@@ -41,7 +41,25 @@ public class Board {
         System.out.println("Moved checker from position " + (start + 1) + " to " + (end + 1));
     }
 
-    public void executeMove(int start, int end) {
+    public void moveCheckerToBoard(ArrayList<Checker> bar,int end) {
+        Checker checker = bar.remove(0);
+        board.get(end).add(checker);
+        System.out.println("Moved checker from bar " + " to " + (end + 1));
+    }
+    public void executeMove(int start, int end, Player player) {
+
+        if(start == 0) {
+            ArrayList<Checker> endCheckers = board.get(end);
+           if(barO.getFirst().getSymbol().equals(player.getSymbol())) {
+               moveCheckerToBoard(barO,end);
+               return;
+           }
+           if(barX.getFirst().getSymbol().equals(player.getSymbol())) {
+               moveCheckerToBoard(barX,end);
+               return;
+           }
+
+        }
         ArrayList<Checker> endCheckers = board.get(end);
         ArrayList<Checker> startCheckers = board.get(start);
 
@@ -135,13 +153,32 @@ public class Board {
 
     public ArrayList<String> getListOfLegalMoves(Player player, ArrayList<Integer> diceValues){
         ArrayList<String> legalMoves = new ArrayList<>();
+        ArrayList<String> legalmovesboard = new ArrayList<>();
         int die1 = diceValues.get(0);
         int die2 = diceValues.get(1);
         for(Checker checker : getCurrentPlayerCheckers(player)){
             int startPoint =  checker.getPosition();
            // legalMoves = canWeMakeAMove(startPoint,die1,die2,player);
             //added to test
-            legalMoves.addAll(canWeMakeAMove(startPoint, die1, die2, player));
+//            if(canWeBearOff(player)) {
+//
+//            }
+
+
+
+            if(areThereCheckersOnTheBar(player)) {
+                if(canWeMoveCheckersToBoard(die1,die2,player).isEmpty()) {
+                    legalmovesboard.add("-1");
+                    return  legalmovesboard;
+                }
+
+                legalmovesboard.addAll(canWeMoveCheckersToBoard(die1,die2,player));
+                return legalmovesboard;
+            } else {
+                legalMoves.addAll(canWeMakeAMove(startPoint, die1, die2, player));
+            }
+
+
 
         }
 
@@ -191,6 +228,103 @@ public class Board {
 
         return potentialLegalMoves; // Return potential moves (empty if none found)
     }
+
+    // Check if there are checkers on the bar for a specific player
+    public boolean areThereCheckersOnTheBar(Player player) {
+        if (player.getSymbol().equals("X")) {
+            return !getBarX().isEmpty();
+        } else if (player.getSymbol().equals("O")) {
+            return !getBarO().isEmpty();
+        }
+        return false;
+    }
+
+
+
+    public ArrayList<String> canWeMoveCheckersToBoard(int die1, int die2, Player player) {
+        ArrayList<String> potentialLegalMoves = new ArrayList<>();
+
+               int[] newPositions = {
+                       die1,
+                       die2,
+                       die1 + die2
+               };
+
+               //ArrayList<ArrayList<Checker>> boardst  = board.getBoard();
+               String playerSymbol = player.getSymbol();
+
+               for (int newPos : newPositions) {
+                   if (newPos >= 0 && newPos < board.size()) { // Check if within board bounds
+                       ArrayList<Checker> checkersAtNewPos = board.get(newPos);
+                       String opponentSymbol = playerSymbol.equals("X") ? "O" : "X";
+
+                       int opponentCheckerCount = 0;
+                       boolean isOwnedByPlayer = true;
+
+                       // Check if the position is valid (either empty or controlled by the player)
+                       for (Checker checker : checkersAtNewPos) {
+                           if (checker.getPlayer().equals(opponentSymbol)) {
+                               opponentCheckerCount++;
+                               isOwnedByPlayer = false; // Position is not owned by the current player
+                           }
+                       }
+
+                       if (checkersAtNewPos.isEmpty() || opponentCheckerCount < 2 || isOwnedByPlayer) {
+                           // 1 to represent board positions correctly
+                           String moveDescription = "Initial position: Bar" + ", Final position: " + (newPos + 1);
+                           potentialLegalMoves.add(moveDescription);
+                       }
+                   }
+               }
+               return potentialLegalMoves; // Return potential moves (empty if none found)
+
+
+
+    }
+
+    /*public boolean canWeBearOff(Board board, Player player) {
+
+        if (player.getSymbol().equals("X")) {
+
+        }
+
+        if (player.getSymbol().equals("O")) {
+
+        }
+
+        return false;
+
+    }*/
+
+    public boolean canWeBearOff(Player player) {
+        ArrayList<ArrayList<Checker>> boardPositions = this.getBoard();
+        String playerSymbol = player.getSymbol();
+        int start, end;
+
+        if (playerSymbol.equals("X")) {
+            start = 0;
+            end = 5;
+        } else if (playerSymbol.equals("O")) {
+            start = 18;
+            end = 23;
+        } else {
+            return false; // Invalid symbol
+        }
+
+        // Check all points outside the home base
+        for (int i = 0; i < boardPositions.size(); i++) {
+            if (i < start || i > end) {
+                for (Checker checker : boardPositions.get(i)) {
+                    if (checker.getSymbol().equals(playerSymbol)) {
+                        return false; // Found a checker outside the home base
+                    }
+                }
+            }
+        }
+
+        return true; // All checkers are in the home base
+    }
+
 
     public void printCheckerOnBar() {
         if(barX.size() != 0 && barX.size() > countXOnBar) {
@@ -245,17 +379,7 @@ public class Board {
         System.out.println("\n"); // New line after full board
     }
 
-    public ArrayList<Checker> getBarX() {
-        return barX;
-    }
 
-    public ArrayList<Checker> getBarO(){
-        return barO;
-    }
-
-    public ArrayList<ArrayList<Checker>> getBoard() {
-        return board;
-    }
 
 
     public void displayTotalPipCounts(Player playerX, Player player0) {
