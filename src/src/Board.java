@@ -109,9 +109,7 @@ public class Board {
     }
 //LOOK AT THIS
     public ArrayList<Checker> getCurrentPlayerCheckers(Player player) {
-
         ArrayList<Checker> checkers = new ArrayList<>();
-
         for (ArrayList<Checker> point : board) {
             if (point.size() != 0 && point.get(0).getSymbol().equals(player.getSymbol())) {
                 checkers.add(point.getFirst());
@@ -129,6 +127,7 @@ public class Board {
             int startPoint =  checker.getPosition();
            // legalMoves = canWeMakeAMove(startPoint,die1,die2,player);
             //added to test
+
             legalMoves.addAll(canWeMakeAMove(startPoint, die1, die2, player));
 
         }
@@ -192,13 +191,88 @@ public class Board {
             System.out.print("BAR   ");
         }
     }
-    public void display() {
+
+    private int getPipNumber(int position, Player player) {
+        if(player.getSymbol().equals("X")) {
+            return position + 1;
+        } else {
+            return 24 - position;
+        }
+    }
+
+    public void displayTopPipNumbers(Player player) {
+        System.out.print(" ");
+        int pipNumber;
+        int count = 0;
+        for (int i = 12; i < 18; i++) {
+             pipNumber = getPipNumber(i, player);
+            count += 1;
+            if(pipNumber < 10)
+                System.out.print("0" + pipNumber);
+            else
+                System.out.print(pipNumber);
+            if(count < 6) {
+                System.out.print("--");
+            }
+        }
+        System.out.print("  BAR   ");
+        count = 0;
+        for (int i = 18; i < 24; i++) {
+             pipNumber = getPipNumber(i, player);
+            count += 1;
+            //System.out.print(pipNumber);
+            if(pipNumber < 10)
+                System.out.print("0" + pipNumber);
+            else
+                System.out.print(pipNumber);
+            if(count < 6) {
+                System.out.print("--");
+            }
+        }
+        System.out.print("  OFF");
+        System.out.println();
+    }
+
+    public void displayBottomPipNumbers(Player player) {
+        System.out.print(" ");
+        int count = 0;
+        int pipNumber;
+        for (int i = 11; i >= 6; i--) {
+             pipNumber = getPipNumber(i, player);
+            count += 1;
+            if(pipNumber < 10)
+                System.out.print("0" + pipNumber);
+            else
+                System.out.print(pipNumber);
+            if(count < 6) {
+                System.out.print("--");
+            }
+        }
+        System.out.print("  BAR   ");
+        count = 0;
+        for (int i = 5; i >= 0; i--) {
+             pipNumber = getPipNumber(i, player);
+            count += 1;
+           // System.out.print(pipNumber);
+            if(pipNumber < 10)
+                System.out.print("0" + pipNumber);
+            else
+                System.out.print(pipNumber);
+            if(count < 6) {
+                System.out.print("--");
+            }
+        }
+        System.out.print("  OFF");
+        System.out.println();
+    }
+
+    public void display(Player player) {
 
         countXOnBar = 0;
         countOOnBar = 0;
 
-        System.out.println(" 13--14--15--16--17--18  BAR   19--20--21--22--23--24  OFF");
-
+       // System.out.println(" 13--14--15--16--17--18  BAR   19--20--21--22--23--24  OFF");
+        displayTopPipNumbers(player);
         int maxRowsNew = findCurrentMaxRows(); // Find max rows in board
 
         // Display the upper part of the board (points 12 to 23)
@@ -229,7 +303,8 @@ public class Board {
             System.out.println();
         }
 
-        System.out.println(" 12--11--10--09--08--07  BAR   06--05--04--03--02--01  OFF");
+        //System.out.println(" 12--11--10--09--08--07  BAR   06--05--04--03--02--01  OFF");
+        displayBottomPipNumbers( player);
         System.out.println("\n"); // New line after full board
     }
 
@@ -253,11 +328,13 @@ public class Board {
         for(int i = 0; i < board.size(); i++) {
             int point = board.get(i).size();
             if(point != 0) {
-                int pipScore = (25 - (i + 1) * point);
+                int pipScoreX = (24 - i) * point; // Player X's perspective (24 to 1)
+                int pipScoreO = (i + 1) * point;   // Player O's perspective (1 to 24)
+
                 if(board.get(i).get(0).getSymbol().equals("X")) {
-                    totalPipCountX += pipScore;
+                    totalPipCountX += pipScoreX;
                 } else if (board.get(i).get(0).getSymbol().equals("O")) {
-                    totalPipCountO += pipScore;
+                    totalPipCountO += pipScoreO;
                 }
             }
         }

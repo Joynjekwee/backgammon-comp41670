@@ -22,7 +22,7 @@ public class Game {
         System.out.print("Player 1: " + player1.getName() + " (" + player1.getSymbol() + ")" + "\t\t\t\t"
                 + "Player 2: " + player2.getName() + " (" + player2.getSymbol() + ")" + "\n");
         System.out.println();
-        board.display();
+
     }
 
 
@@ -38,16 +38,21 @@ public class Game {
             if (player1rolled != player2rolled) {
                if (player1rolled > player2rolled) {
                    System.out.println(player1.getName() + " goes first");
+                   System.out.println();
+                   System.out.println();
                    return player1;
                }
                else {
                    System.out.println(player2.getName() + " goes first");
+                   System.out.println();
+                   System.out.println();
                    return player2;
                }
             }
 
             System.out.println("Roll Again");
         }
+
 
     }
 
@@ -56,6 +61,8 @@ public class Game {
         System.out.println("Possible commands to input");
         System.out.println("1.Roll");
         System.out.println("2.Quit");
+        System.out.println("3.Hint");
+        System.out.println("4.Pip");
         System.out.println("=========================================================");
         System.out.println();
     }
@@ -63,6 +70,7 @@ public class Game {
     public void playGame(){
         start();
         Player currentPlayer = whoGoesFirst();
+        board.display(currentPlayer);
 
         boolean stillPlaying = true;
 
@@ -83,7 +91,7 @@ public class Game {
                     playMove(choice, legalMoves);
                     //System.out.println("Moves: " + dice.getMoves());
                     currentPlayer = switchPlayer(currentPlayer,player1,player2);
-                    board.display();
+                    board.display(currentPlayer);
                     break;
 
                 case "quit":
@@ -94,6 +102,11 @@ public class Game {
 
                 case "hint":
                     printCommands();
+                    break;
+
+                case "pip":
+                    board.displayTotalPipCounts(player1, player2);
+                    break;
                 default:
                     System.out.println("Invalid input, please type commands available.");
                     break;
