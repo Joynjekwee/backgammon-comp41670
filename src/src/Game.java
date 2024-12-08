@@ -86,9 +86,32 @@ public class Game {
                     System.out.println("Roll Result: " + dieResults);
                     diceValues = dice.getMoves();
                     ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
-                    printLegalMoves(legalMoves);
-                    int choice = playerSelectsMoveToPlay(legalMoves);
-                    playMove(choice, legalMoves);
+
+                    if (legalMoves.isEmpty()) {
+                        System.out.println("No legal moves available. Switching turn.");
+                    } else {
+                     //   printLegalMoves(legalMoves);
+
+                        // Ask the player to input their move
+                        boolean validMove = false;
+                        while (!validMove) {
+                            System.out.print("Enter your move as: pos1 to pos2 (or type 'hint' to see suggestions): ");
+                            String moveInput = in.nextLine();
+
+                            if (moveInput.equalsIgnoreCase("hint")) {
+                                System.out.println("Here are some legal moves:");
+                                printLegalMoves(legalMoves);
+                            } else {
+                                validMove = validateAndExecuteMove(moveInput, currentPlayer);
+                                if (!validMove) {
+                                    System.out.println("Invalid move. Try again.");
+                                }
+                            }
+                        }
+                    }
+
+//                    int choice = playerSelectsMoveToPlay(legalMoves);
+//                    playMove(choice, legalMoves);
                     //System.out.println("Moves: " + dice.getMoves());
                     currentPlayer = switchPlayer(currentPlayer,player1,player2);
                     board.display(currentPlayer);
@@ -101,7 +124,13 @@ public class Game {
                     break;
 
                 case "hint":
-                    printCommands();
+                    ArrayList<String> hints = board.getListOfLegalMoves(currentPlayer, diceValues);
+                    if (hints.isEmpty()) {
+                        System.out.println("No legal moves available.");
+                    } else {
+                        System.out.println("Here are some legal moves:");
+                        printLegalMoves(hints);
+                    }
                     break;
 
                 case "pip":
@@ -143,6 +172,26 @@ public class Game {
         return moveSelected;
 
 
+    }
+
+    private boolean validateAndExecuteMove(String moveInput, Player currentPlayer) {
+        try {
+            String[] parts = moveInput.split("to");
+            int start = Integer.parseInt(parts[0].trim()) - 1;
+            int end = Integer.parseInt(parts[1].trim()) - 1;
+
+            ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
+            for (String move : legalMoves) {
+                if (move.contains("Initial position: " + (start + 1)) &&
+                        move.contains("Final position: " + (end + 1))) {
+                    board.executeMove(start, end, currentPlayer);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid format. Use the format '13 to 18'.");
+        }
+        return false;
     }
 
     public void playMove(int choice, ArrayList<String> legalMoves) {
@@ -195,10 +244,10 @@ public class Game {
 
         // If current player is player1, switch to player2, otherwise switch to player1
         if (currentPlayer == player1) {
-            System.out.println("The Current Player is Player: " + player2.getName());
+            System.out.println("The Current Player is Player: " + player2.getName() + " (" + player2.getSymbol() + ")");
             return player2;
         } else {
-            System.out.println("The Current Player is Player: " + player1.getName());
+            System.out.println("The Current Player is Player: " + player1.getName()+ " (" + player1.getSymbol() + ")");
             return player1;
         }
     }

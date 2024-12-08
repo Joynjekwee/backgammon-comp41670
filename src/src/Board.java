@@ -50,13 +50,18 @@ public class Board {
 
         if(start == 0) {
             ArrayList<Checker> endCheckers = board.get(end);
-           if(barO.getFirst().getSymbol().equals(player.getSymbol())) {
-               moveCheckerToBoard(barO,end);
-               return;
+           if(!barO.isEmpty()) {
+               if(barO.getFirst().getSymbol().equals(player.getSymbol())) {
+                   moveCheckerToBoard(barO,end);
+                   return;
+               }
            }
-           if(barX.getFirst().getSymbol().equals(player.getSymbol())) {
-               moveCheckerToBoard(barX,end);
-               return;
+
+           if(!barX.isEmpty()) {
+            if(barX.getFirst().getSymbol().equals(player.getSymbol())) {
+                moveCheckerToBoard(barX, end);
+                return;
+            }
            }
 
         }
