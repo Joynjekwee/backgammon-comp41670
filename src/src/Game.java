@@ -76,6 +76,7 @@ public class Game {
 
         while (stillPlaying) {
 
+            System.out.println(currentPlayer.getName() + "'s turn (" + currentPlayer.getSymbol() + ")");
             System.out.print("User Input: ");
             String userInput = in.nextLine();
 
@@ -85,40 +86,66 @@ public class Game {
                     String dieResults = dice.getDiceResults();
                     System.out.println("Roll Result: " + dieResults);
                     diceValues = dice.getMoves();
-                    ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
 
-                    if (legalMoves.isEmpty()) {
-                        System.out.println("No legal moves available. Switching turn.");
-                    } else {
-                     //   printLegalMoves(legalMoves);
-
-                        // Ask the player to input their move
-                        boolean validMove = false;
-                        while (!validMove) {
-                            System.out.print("Enter your move as: pos1 to pos2 (or type 'hint' to see suggestions): ");
-                            String moveInput = in.nextLine();
-
-                            if (moveInput.equalsIgnoreCase("hint")) {
-                                System.out.println("Here are some legal moves:");
-                                printLegalMoves(legalMoves);
-                            } else {
-                                validMove = validateAndExecuteMove(moveInput, currentPlayer);
-                                if (!validMove) {
-                                    System.out.println("Invalid move. Try again.");
-                                }
-                            }
-                        }
-                    }
+//                    ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
+//                    if (legalMoves.isEmpty()) {
+//                        System.out.println("No legal moves available. Switching turn.");
+//                    } else {
+//                     //   printLegalMoves(legalMoves);
+//
+//                        // Ask the player to input their move
+//                        boolean validMove = false;
+//                        while (!validMove) {
+//                            System.out.print("Enter your move as: pos1 to pos2 (or type 'hint' to see suggestions): ");
+//                            String moveInput = in.nextLine();
+//
+//                            if (moveInput.equalsIgnoreCase("hint")) {
+//                                System.out.println("Here are some legal moves:");
+//                                printLegalMoves(legalMoves);
+//                            } else {
+//                                validMove = validateAndExecuteMove(moveInput, currentPlayer);
+//                                if (!validMove) {
+//                                    System.out.println("Invalid move. Try again.");
+//                                }
+//                            }
+//                        }
+//                    }
 
 //                    int choice = playerSelectsMoveToPlay(legalMoves);
 //                    playMove(choice, legalMoves);
                     //System.out.println("Moves: " + dice.getMoves());
+
+                    boolean canMakeMove = true;
+                    while (!diceValues.isEmpty() && canMakeMove) {
+                        board.display(currentPlayer);
+                        System.out.println("You have the following die values remaining: " + diceValues);
+                        System.out.print("Enter your move as 'pos1 to pos2' (or type 'hint' for suggestions, 'skip' to end your turn): ");
+                        String moveInput = in.nextLine();
+
+                        if (moveInput.equalsIgnoreCase("hint")) {
+                            ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
+                            if (legalMoves.isEmpty()) {
+                                System.out.println("No legal moves available.");
+                            } else {
+                                System.out.println("Legal moves:");
+                                printLegalMoves(legalMoves);
+                            }
+                        }  else {
+                            boolean validMove = validateAndExecuteMove(moveInput, currentPlayer);
+                            if (validMove) {
+                                System.out.println("Move executed successfully.");
+                            } else {
+                                System.out.println("Invalid move. Please try again.");
+                            }
+                        }
+                    }
+
                     currentPlayer = switchPlayer(currentPlayer,player1,player2);
-                    board.display(currentPlayer);
+                   // board.display(currentPlayer);
                     break;
 
                 case "quit":
-                    System.out.println("Quitting Game Now:");
+                    System.out.println("Quitting Game Now.......");
                     printEndOfGameScore();
                     stillPlaying = false;
                     break;
@@ -179,15 +206,32 @@ public class Game {
             String[] parts = moveInput.split("to");
             int start = Integer.parseInt(parts[0].trim()) - 1;
             int end = Integer.parseInt(parts[1].trim()) - 1;
+            int dieUsed = Math.abs(start - end);
+
+
 
             ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
             for (String move : legalMoves) {
                 if (move.contains("Initial position: " + (start + 1)) &&
                         move.contains("Final position: " + (end + 1))) {
+
+                    // Execute move and handle die usage
                     board.executeMove(start, end, currentPlayer);
+
+                    if (diceValues.size() == 2 && diceValues.get(0) + diceValues.get(1) == dieUsed) {
+                        // Combined dice used
+                        diceValues.clear();
+                    } else if (diceValues.contains(dieUsed)) {
+                        // Single die used
+                        diceValues.remove((Integer) dieUsed);
+                    }
+
                     return true;
                 }
             }
+
+            System.out.println("Invalid move!");
+
         } catch (Exception e) {
             System.out.println("Invalid format. Use the format '13 to 18'.");
         }

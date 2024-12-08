@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 
 public class Board {
     private ArrayList<ArrayList<Checker>> board;
@@ -154,57 +153,83 @@ public class Board {
         return checkers;
     }
 
-    public ArrayList<String> getListOfLegalMoves(Player player, ArrayList<Integer> diceValues){
+    public ArrayList<String> getListOfLegalMoves(Player player, ArrayList<Integer> diceValues) {
         ArrayList<String> legalMoves = new ArrayList<>();
-        ArrayList<String> legalmovesboard = new ArrayList<>();
-        int die1 = diceValues.get(0);
-        int die2 = diceValues.get(1);
-        for(Checker checker : getCurrentPlayerCheckers(player)){
-            int startPoint =  checker.getPosition();
-           // legalMoves = canWeMakeAMove(startPoint,die1,die2,player);
-            //added to test
-//            if(canWeBearOff(player)) {
-//
-//            }
+        ArrayList<Integer> usedDice = new ArrayList<>(); // To track used dice
 
+        for (Checker checker : getCurrentPlayerCheckers(player)) {
+            int startPoint = checker.getPosition();
 
-
-            if(areThereCheckersOnTheBar(player)) {
-                if(canWeMoveCheckersToBoard(die1,die2,player).isEmpty()) {
-                    legalmovesboard.add("-1");
-                    return  legalmovesboard;
+            // Iterate through dice for single-die moves
+            for (int die : diceValues) {
+                if (!usedDice.contains(die)) { // Skip dice already used
+                    legalMoves.addAll(canWeMakeAMove(startPoint, die, player));
                 }
-
-                legalmovesboard.addAll(canWeMoveCheckersToBoard(die1,die2,player));
-                return legalmovesboard;
-            } else {
-                legalMoves.addAll(canWeMakeAMove(startPoint, die1, die2, player));
             }
 
-
-
+            // Handle combined-dice moves
+            if (diceValues.size() == 2) {
+                int combinedDie = diceValues.get(0) + diceValues.get(1);
+                if (!usedDice.contains(combinedDie)) { // Skip combined dice if used
+                    legalMoves.addAll(canWeMakeAMove(startPoint, combinedDie, player));
+                }
+            }
         }
-
         return legalMoves;
-        // valid.
     }
 
 
 
 
-    public ArrayList<String> canWeMakeAMove(int start, int die1, int die2, Player player) {
 
+    public ArrayList<String> canWeMakeAMove(int start, int dieValue, Player player) {
         ArrayList<String> potentialLegalMoves = new ArrayList<>();
-        int[] newPositions = {
-                start + die1,
-                start + die2,
-                start + die1 + die2
-        };
+        int newPos = start + dieValue;
 
-        //ArrayList<ArrayList<Checker>> boardst  = board.getBoard();
+        if (newPos >= 0 && newPos < board.size()) { // Check if within board bounds
+            ArrayList<Checker> checkersAtNewPos = board.get(newPos);
+            String playerSymbol = player.getSymbol();
+            String opponentSymbol = playerSymbol.equals("X") ? "O" : "X";
+
+            int opponentCheckerCount = 0;
+            boolean isOwnedByPlayer = true;
+
+            // Check if the position is valid (either empty or controlled by the player)
+            for (Checker checker : checkersAtNewPos) {
+                if (checker.getPlayer().equals(opponentSymbol)) {
+                    opponentCheckerCount++;
+                    isOwnedByPlayer = false; // Position is not owned by the current player
+                }
+            }
+
+            if (checkersAtNewPos.isEmpty() || opponentCheckerCount < 2 || isOwnedByPlayer) {
+                String moveDescription = "Initial position: " + (start + 1) + ", Final position: " + (newPos + 1);
+                potentialLegalMoves.add(moveDescription);
+            }
+        }
+
+        return potentialLegalMoves; // Return potential moves (empty if none found)
+    }
+
+    // Check if there are checkers on the bar for a specific player
+    public boolean areThereCheckersOnTheBar(Player player) {
+        if (player.getSymbol().equals("X")) {
+            return !getBarX().isEmpty();
+        } else if (player.getSymbol().equals("O")) {
+            return !getBarO().isEmpty();
+        }
+        return false;
+    }
+
+
+
+    public ArrayList<String> canWeMoveCheckersToBoard(ArrayList<Integer> dieValues, Player player) {
+        ArrayList<String> potentialLegalMoves = new ArrayList<>();
         String playerSymbol = player.getSymbol();
 
-        for (int newPos : newPositions) {
+        for (int dieValue : dieValues) {
+            int newPos = dieValue - 1; // Convert to zero-based index if necessary
+
             if (newPos >= 0 && newPos < board.size()) { // Check if within board bounds
                 ArrayList<Checker> checkersAtNewPos = board.get(newPos);
                 String opponentSymbol = playerSymbol.equals("X") ? "O" : "X";
@@ -222,68 +247,15 @@ public class Board {
 
                 if (checkersAtNewPos.isEmpty() || opponentCheckerCount < 2 || isOwnedByPlayer) {
                     // 1 to represent board positions correctly
-                    String moveDescription = "Initial position: " + (start + 1) + ", Final position: " + (newPos + 1);
+                    String moveDescription = "Initial position: Bar" + ", Final position: " + (newPos + 1);
                     potentialLegalMoves.add(moveDescription);
                 }
             }
         }
 
-
         return potentialLegalMoves; // Return potential moves (empty if none found)
     }
 
-    // Check if there are checkers on the bar for a specific player
-    public boolean areThereCheckersOnTheBar(Player player) {
-        if (player.getSymbol().equals("X")) {
-            return !getBarX().isEmpty();
-        } else if (player.getSymbol().equals("O")) {
-            return !getBarO().isEmpty();
-        }
-        return false;
-    }
-
-
-
-    public ArrayList<String> canWeMoveCheckersToBoard(int die1, int die2, Player player) {
-        ArrayList<String> potentialLegalMoves = new ArrayList<>();
-
-               int[] newPositions = {
-                       die1,
-                       die2,
-                       die1 + die2
-               };
-
-               //ArrayList<ArrayList<Checker>> boardst  = board.getBoard();
-               String playerSymbol = player.getSymbol();
-
-               for (int newPos : newPositions) {
-                   if (newPos >= 0 && newPos < board.size()) { // Check if within board bounds
-                       ArrayList<Checker> checkersAtNewPos = board.get(newPos);
-                       String opponentSymbol = playerSymbol.equals("X") ? "O" : "X";
-
-                       int opponentCheckerCount = 0;
-                       boolean isOwnedByPlayer = true;
-
-                       // Check if the position is valid (either empty or controlled by the player)
-                       for (Checker checker : checkersAtNewPos) {
-                           if (checker.getPlayer().equals(opponentSymbol)) {
-                               opponentCheckerCount++;
-                               isOwnedByPlayer = false; // Position is not owned by the current player
-                           }
-                       }
-
-                       if (checkersAtNewPos.isEmpty() || opponentCheckerCount < 2 || isOwnedByPlayer) {
-                           // 1 to represent board positions correctly
-                           String moveDescription = "Initial position: Bar" + ", Final position: " + (newPos + 1);
-                           potentialLegalMoves.add(moveDescription);
-                       }
-                   }
-               }
-               return potentialLegalMoves; // Return potential moves (empty if none found)
-
-
-
-    }
 
     /*public boolean canWeBearOff(Board board, Player player) {
 
