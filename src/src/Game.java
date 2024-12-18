@@ -11,11 +11,14 @@ public class Game {
     private Dice dice = new Dice();
     private ArrayList<Integer> diceValues = new ArrayList<>();
     private String winner;
+    private boolean stillPlaying = true;
+
 
     public Game(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
         board = new Board();
+
     }
 
     public void start(){
@@ -40,12 +43,10 @@ public class Game {
                if (player1rolled > player2rolled) {
                    System.out.println(player1.getName() + " goes first");
                    System.out.println();
-                   System.out.println();
                    return player1;
                }
                else {
                    System.out.println(player2.getName() + " goes first");
-                   System.out.println();
                    System.out.println();
                    return player2;
                }
@@ -70,15 +71,15 @@ public class Game {
     }
 
     public void playGame(){
-        start();
         currentPlayer = whoGoesFirst();
+        start();
         board.display(currentPlayer);
 
-        boolean stillPlaying = true;
+
 
         while (stillPlaying) {
-
-            System.out.print("User Input: ");
+            System.out.println("Current Player: " + currentPlayer.getName() + "("  + currentPlayer.getSymbol() + ")" );
+            System.out.print( "User Input: ");
             String userInput = in.nextLine();
 
             if(userInput.equalsIgnoreCase("quit")) {
@@ -128,9 +129,6 @@ public class Game {
                     }
                 }
 
-//                    int choice = playerSelectsMoveToPlay(legalMoves);
-//                    playMove(choice, legalMoves);
-                //System.out.println("Moves: " + dice.getMoves());
                 currentPlayer = switchPlayer(currentPlayer,player1,player2);
                 board.display(currentPlayer);
                 break;
@@ -138,6 +136,7 @@ public class Game {
             case "quit":
                 System.out.println("Quitting Game Now:");
                 printEndOfGameScore();
+                stillPlaying = false;
                 break;
 
             case "hint":
@@ -201,13 +200,13 @@ public class Game {
     private boolean validateAndExecuteMove(String moveInput, Player currentPlayer) {
         try {
             String[] parts = moveInput.split("to");
-            int start = Integer.parseInt(parts[0].trim()) - 1;
-            int end = Integer.parseInt(parts[1].trim()) - 1;
+            int start = Integer.parseInt(parts[0].trim()) ;
+            int end = Integer.parseInt(parts[1].trim()) ;
 
             ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
             for (String move : legalMoves) {
-                if (move.contains("Initial position: " + (start + 1)) &&
-                        move.contains("Final position: " + (end + 1))) {
+                if (move.contains("Initial position: " + (start)) &&
+                        move.contains("Final position: " + (end))) {
                     board.executeMove(start, end, currentPlayer);
                     return true;
                 }
