@@ -13,11 +13,11 @@ public class PipCalculator {
     }
 
     private int getPipNumber(int position, Player player) {
-        if(player.getSymbol().equals(constants.X)) {
+        if (player.getSymbol().equals(constants.X)) {
             return position;
         } else {
-          //  if(24-position == 0) return 1;
-            return 25-position;
+            // if(24-position == 0) return 1;
+            return 25 - position;
         }
 
     }
@@ -72,6 +72,10 @@ public class PipCalculator {
         }
 
         return totalPipCount;
+    }
+
+    public int getPipCount(Player player) {
+        return calculateTotalPipCount(player);
     }
 
     public void displayTotalPipCounts(Player playerX, Player playerO) {
