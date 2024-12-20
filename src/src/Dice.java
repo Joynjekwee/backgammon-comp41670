@@ -28,7 +28,7 @@ public class Dice {
     }
 
 
-    // Check if the roll is a double (both dice show the same value))
+    // Check if the roll is a double (both dice show the same value)
     public boolean isDouble() {
         return die1 == die2;
     }

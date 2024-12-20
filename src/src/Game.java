@@ -248,7 +248,7 @@ public class Game {
                 }
                 // If bar move:
                 if (move.contains("Initial position: Bar") && move.contains("Final position: " + (end))) {
-                    // start is irrelevant because it's from barr
+                    // start is irrelevant because it's from bar
                     board.executeMove(1, end, currentPlayer);
                     return true;
                 }

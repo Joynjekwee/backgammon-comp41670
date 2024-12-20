@@ -19,7 +19,7 @@ public class Checker {
 
     public int getPosition() {
         return position;
-    }//
+    }
     public  String getSymbol() {return symbol;}
 
 

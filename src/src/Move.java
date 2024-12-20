@@ -2,7 +2,7 @@ public class Move {
 
 
 
-    public boolean moveCheckerr(int startpt, int endpt, Checker checker){
+    public boolean moveChecker(int startpt, int endpt, Checker checker){
 
         if(!legalMove(startpt,endpt,checker))
             return false;
