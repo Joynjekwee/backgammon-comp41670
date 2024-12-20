@@ -416,7 +416,7 @@ public class Board {
         pipCalculator.displayTopPipNumbers(player);
         int maxRowsNew = findCurrentMaxRows(); // Find max rows in board
 
-        // Display the upper part of the board (points 13 to 24)
+        // Display the upper part of the board (points 13 to 24))
         for (int row = 0; row <= maxRowsNew-1; row++) {
             System.out.print(" ");
             for (int pointIndex = 13; pointIndex <= 18; pointIndex++) {

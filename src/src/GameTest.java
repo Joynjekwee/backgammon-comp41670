@@ -17,7 +17,7 @@ public class GameTest {
 
         Player p1 = new Player(userName1, player1Symbol);
         Player p2 = new Player(userName2, player2Symbol);
-        Game game = new Game(p1, p2);
+        Game game = new Game(p1, p2); //
         game.printCommands();
         game.playGame();
 

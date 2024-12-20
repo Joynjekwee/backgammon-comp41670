@@ -16,7 +16,7 @@ public class PipCalculator {
         if(player.getSymbol().equals(constants.X)) {
             return position;
         } else {
-            //  if(24-position == 0) return 1;
+            //  if(24-position == 0) returnn 1;
             return 25-position;
         }
 
