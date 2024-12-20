@@ -48,4 +48,11 @@ public class Dice {
     public String getDiceResults(){
         return "Dice 1: " + die1 + ", Dice 2: " + die2 + (isDouble() ? "(Doubles!)" : " ");
     }
+
+    // Helper Test method
+    public void setDiceValues(int die1, int die2) {
+        this.die1 = die1;
+        this.die2 = die2;
+    }
+
 }

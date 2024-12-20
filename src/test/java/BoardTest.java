@@ -17,7 +17,7 @@ public class BoardTest {
 
     @Test
     public void testInitialisation() {
-        assertEquals(5, board.getCheckersAt(12).size());
+        assertEquals(5, board.getCheckersAt(13).size());
     }
 
     @Test
@@ -25,6 +25,6 @@ public class BoardTest {
         board.moveChecker(1, 5);
         assertEquals(1, board.getCheckersAt(5).size());
         assertEquals(1, board.getCheckersAt(1).size());
-        assertEquals("X", board.getCheckersAt(5).get(0).getSymbol());
+        assertEquals("O", board.getCheckersAt(5).get(0).getSymbol());
     }
 }
