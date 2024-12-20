@@ -1,35 +1,22 @@
 public class Player{
 
     private String name;
-    private Dice dice;
+    private int score;
+    private String symbol;
 
-    public Player(String name){
+    public Player(String name, String symbol) {
         this.name = name;
-        dice = new Dice();
+        this.score = 0;
+        this.symbol = symbol;
     }
 
-    public int rollDieToStart(){
-        dice.rollSingleDie();
-        return dice.getDie1();
-    }
-
-    public void rollDice(){
-        dice.roll();
-    }
-    public String getDiceResults(){
-        return dice.getDiceResults();
-    }
-
-    public int getDie1() {
-        return dice.getDie1();
-    }
-
-    public int getDie2() {
-        return dice.getDie2();
-    }
-
+    public int getScore() {return score;}
     public String getName(){
         return name;
+    }
+    public String getSymbol(){return symbol;}
+    public void addScore(int increment) {
+        this.score += increment;
     }
 
 

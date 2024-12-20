@@ -1,29 +1,27 @@
 public class Checker {
-    private String player;
-    private int count;
+    private String symbol;
+    private int position;
 
-    public Checker(String player, int count) {
-        this.player = player;
-        this.count = count;
+
+    public Checker(String symbol) {
+        this.symbol = symbol;
     }
 
+    public Checker(String symbol, int position) {
+        this.symbol = symbol;
+        this.position = position;
+    }
     public String getPlayer() {
-        return player;
+        return symbol;
     }
 
 
-    public int getCount() {
-        return count;
-    }
 
-    public  String getSymbol() {return player;}
-
-    public String toString() {
-        if (count > 0) {
-            return player;
-        } else {
-            return "|";  // Empty point if there are no checkers
-        }
+    public int getPosition() {
+        return position;
     }
+    public  String getSymbol() {return symbol;}
+
+
 
 }
