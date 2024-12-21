@@ -8,13 +8,9 @@ import java.util.Map;
 
 public class Board {
     private Map<Integer, ArrayList<Checker>> board;
-    private Map<String, ArrayList<Checker>> bar;
     private Map<String, Integer> bearOff;
-    private ArrayList<Checker> barX = new ArrayList<>();
-    private ArrayList<Checker> barO = new ArrayList<>();
-    private ArrayList<Checker> bearoffAreaPlayer1 = new ArrayList<>();
-    private ArrayList<Checker> bearoffAreaPlayer2 = new ArrayList<>();
-    private Bar bar1;
+    private Bar bar;
+    private BearOffArea bearOffArea;
     private PipCalculator pipCalculator;
     private int countXOnBar = 0;
     private int countOOnBar = 0;
@@ -27,8 +23,8 @@ public class Board {
 
     public Board() {
         board = new HashMap<>();
-        bar = new HashMap<>();
-        bar1 = new Bar();
+        bar = new Bar();
+        bearOffArea = new BearOffArea();
         bearOff = new HashMap<>();
         pipCalculator = new PipCalculator(board);
         c = new Constants();
@@ -40,8 +36,6 @@ public class Board {
         for (int i = 1; i <= 24; i++) {
             board.put(i, new ArrayList<>());
         }
-        bar.put(c.X, new ArrayList<>());
-        bar.put(c.O, new ArrayList<>());
         bearOff.put(c.X, 0);
         bearOff.put(c.O, 0);
         setupInitialBoard();
@@ -88,32 +82,31 @@ public class Board {
     }
 
     public List<Checker> getBar(String symbol) {
-        return bar1.getCheckers(symbol);
-       // return bar.getOrDefault(symbol, new ArrayList<>());
+        return bar.getCheckers(symbol);
     }
 
-    public int getBearOffCount(String symbol) {
-        return bearOff.getOrDefault(symbol, 0);
-    }
 
     public ArrayList<Checker> getCheckersAt(int position) {
         return board.getOrDefault(position, new ArrayList<>());
     }
 
-    public ArrayList<Checker> getBearoffAreaPlayer1() {
-        return bearoffAreaPlayer1;
+    // Bear-off related methods
+    public void bearOffChecker(String symbol) {
+        // Increment bear-off count using BearOffArea
+        bearOffArea.addChecker(symbol);
+        System.out.println("Checker borne off for player: " + symbol);
     }
 
-    public ArrayList<Checker> getBearoffAreaPlayer2() {
-        return bearoffAreaPlayer2;
+    public int getBearOffCount(String symbol) {
+        // Delegate bear-off count retrieval to BearOffArea
+        return bearOffArea.getBearOffCount(symbol);
     }
-
 
     public int getPipCount(Player player) {
         return pipCalculator.getPipCount(player);
     }
 
-    public void display(Player player, int player1Score, int player2Score) {
+    public void displayScore(Player player, int player1Score, int player2Score) {
         // Display the match score at the top
         System.out.println("Match Score: Player1(X) = " + player1Score + " | Player2(O) = " + player2Score);
         System.out.println(); // Line break for clarity
@@ -130,7 +123,7 @@ public class Board {
                 return false;
             }
         } else {
-            List<Checker> barCheckers = bar1.getCheckers(player.getSymbol());
+            List<Checker> barCheckers = bar.getCheckers(player.getSymbol());
            // ArrayList<Checker> barCheckers = bar.get(player.getSymbol());
             if (barCheckers == null || barCheckers.isEmpty()) {
                 return false;
@@ -168,35 +161,24 @@ public class Board {
         }
 
         Checker checker = board.get(position).remove(0);
-        bar1.addToBar(symbol, checker);
-       // bar.get(symbol).add(checker);
-
+        bar.addToBar(symbol, checker);
        // System.out.println("Checker moved to bar: " + symbol);
     }
 
     public void moveCheckerToBoard(String symbol, int end) {
-        Checker checker = bar1.removeFromBar(symbol);
-       // Checker checker = bar.removeFirst();
+        Checker checker = bar.removeFromBar(symbol);
         board.get(end).add(checker);
         System.out.println("Moved checker from bar " + " to " + (end));
     }
 
     public void executeMove(int start, int end, Player player) {
-        ArrayList<Checker> barX = bar.get(c.X);
-        ArrayList<Checker> barO = bar.get(c.O);
+        List<Checker> barX = bar.getCheckers(c.X);
+        List<Checker> barO = bar.getCheckers(c.O);
 
         ArrayList<Checker> endCheckers = board.get(end);
         ArrayList<Checker> startCheckers = (start == 0 || !board.containsKey(start)) ? null : board.get(start);
 
         if (start == 0) {
-//            if (!barX.isEmpty() && barX.get(0).getSymbol().equals(player.getSymbol())) {
-//                moveCheckerToBoard(barX, end);
-//                return;
-//            }
-//            if (!barO.isEmpty() && barO.get(0).getSymbol().equals(player.getSymbol())) {
-//                moveCheckerToBoard(barO, end);
-//                return;
-//            }
             try{
                 moveCheckerToBoard(player.getSymbol(), end);
                 return;
@@ -211,12 +193,7 @@ public class Board {
         if (endCheckers != null && endCheckers.size() == 1 && startCheckers != null && !startCheckers.isEmpty() &&
                 endCheckers.get(0).getPlayer() != startCheckers.get(0).getPlayer()) {
             Checker hitChecker = endCheckers.get(0);
-//            if (hitChecker.getSymbol().equals("X"))
-//                bar.get("X").add(hitChecker);
-//            else if (hitChecker.getSymbol().equals("O")) {
-//                bar.get("O").add(hitChecker);
-//            }
-            bar1.addToBar(hitChecker.getSymbol(), hitChecker);
+            bar.addToBar(hitChecker.getSymbol(), hitChecker);
             endCheckers.remove(hitChecker);
         }
 
@@ -259,8 +236,7 @@ public class Board {
     }
 
     public boolean areThereCheckersOnTheBar(Player player) {
-        return !bar1.getCheckers(player.getSymbol()).isEmpty();
-        //return !bar.getOrDefault(player.getSymbol(), new ArrayList<>()).isEmpty();
+        return !bar.getCheckers(player.getSymbol()).isEmpty();
     }
 
     public List<MoveOption> getListOfLegalMoves(Player player, List<Integer> diceValues) {
@@ -431,8 +407,8 @@ public class Board {
     }
 
     public void printCheckerOnBar() {
-        List<Checker> barX = bar1.getCheckers(c.X);
-        List<Checker> barO = bar1.getCheckers(c.O);
+        List<Checker> barX = bar.getCheckers(c.X);
+        List<Checker> barO = bar.getCheckers(c.O);
         if(!barX.isEmpty() && barX.size() > countXOnBar) {
             System.out.print(barX.get(countXOnBar).getSymbol() + "     ");
             countXOnBar++;
@@ -483,6 +459,11 @@ public class Board {
         // Display pip numbers for the bottom row
         pipCalculator.displayBottomPipNumbers(player);
         System.out.println("\n");
+
+
+        // Display bear-off counts
+        System.out.println("Player X bear-off count: " + getBearOffCount(c.X));
+        System.out.println("Player O bear-off count: " + getBearOffCount(c.O));
     }
 
     public void displayTotalPipCounts(Player playerX, Player player0) {

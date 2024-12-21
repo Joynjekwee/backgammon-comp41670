@@ -20,6 +20,7 @@ public class Game {
     private ArrayList<Integer> diceValues = new ArrayList<>();
     private String winner;
     private boolean stillPlaying = true;
+    private Constants constants;
 
     /**
      * Creates a new Game instance with the specified players
@@ -32,6 +33,7 @@ public class Game {
         this.player1 = player1;
         this.player2 = player2;
         board = new Board();
+        constants = new Constants();
     }
 
     /**
@@ -227,14 +229,14 @@ public class Game {
             System.out.println("It's a tie! No match score awarded.");
         }
 
-        board.display(currentPlayer, player1.getScore(), player2.getScore());
+        board.displayScore(currentPlayer, player1.getScore(), player2.getScore());
     }
 
     private void determineResultType() {
         Player winnerPlayer = winner.equals(player1.getName()) ? player1 : player2;
         Player loserPlayer = winnerPlayer == player1 ? player2 : player1;
 
-        int loserBearOff = loserPlayer.getSymbol().equals("X") ? board.getBearoffAreaPlayer1().size() : board.getBearoffAreaPlayer2().size();
+        int loserBearOff = board.getBearOffCount(loserPlayer.getSymbol());
         boolean hasCheckerOnBar = !board.getBar(loserPlayer.getSymbol()).isEmpty();
         boolean hasCheckerInWinnerHome = board.hasCheckerInHomeArea(loserPlayer, winnerPlayer);
 
@@ -251,7 +253,7 @@ public class Game {
             winnerPlayer.addScore(1);
         }
 
-        board.display(currentPlayer, player1.getScore(), player2.getScore());
+        board.displayScore(currentPlayer, player1.getScore(), player2.getScore());
     }
 
     private void processTestFile(String filename) {
@@ -350,10 +352,10 @@ public class Game {
     }
 
     public boolean isGameOver() {
-        if (board.getBearoffAreaPlayer1().size() == 15) {
+        if (board.getBearOffCount(constants.X) == 15) {
             winner = player1.getName();
             return true;
-        } else if (board.getBearoffAreaPlayer2().size() == 15) {
+        } else if (board.getBearOffCount(constants.O)== 15) {
             winner = player2.getName();
             return true;
         }
