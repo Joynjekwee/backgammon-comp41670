@@ -151,10 +151,10 @@ public class Game {
                     }
 
                     System.out.println(
-                            "Enter your move in the format 'start to end' (e.g., '5 to 12') or type 'hint' for suggestions:");
+                            "Enter your move in the format 'start to end' (e.g., '5 to 12') or type 'more moves' for suggestions:");
                     String moveInput = in.nextLine().trim();
 
-                    if (moveInput.equalsIgnoreCase("hint")) {
+                    if (moveInput.equalsIgnoreCase("more moves")) {
                         printLegalMoves(legalMoves);
                         continue;
                     }
@@ -185,7 +185,7 @@ public class Game {
                 stillPlaying = false;
                 break;
 
-            case "hint":
+            case "more moves":
                 List<MoveOption> hints = board.getListOfLegalMoves(currentPlayer, diceValues);
                 if (hints.isEmpty()) {
                     System.out.println("No legal moves available.");
@@ -203,6 +203,10 @@ public class Game {
                 System.out.println("Input filename:");
                 String filename = in.nextLine();
                 processTestFile(filename);
+                break;
+
+            case "hint":
+                printCommands();
                 break;
 
             default:
@@ -284,12 +288,14 @@ public class Game {
      * Convert from player's displayed perspective back to actual board index.
      */
     private MoveOption parseUserMoveInput(String input, List<MoveOption> legalMoves) {
-        String[] parts = input.split("to");
+
+        String[] parts = input.toLowerCase().split("to");
         if (parts.length != 2) {
             return null;
         }
 
         try {
+
             int displayedStart = Integer.parseInt(parts[0].trim());
             int displayedEnd = Integer.parseInt(parts[1].trim());
 

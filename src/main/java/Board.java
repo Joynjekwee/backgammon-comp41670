@@ -14,11 +14,11 @@ public class Board {
     private ArrayList<Checker> barO = new ArrayList<>();
     private ArrayList<Checker> bearoffAreaPlayer1 = new ArrayList<>();
     private ArrayList<Checker> bearoffAreaPlayer2 = new ArrayList<>();
-
+    private Bar bar1;
     private PipCalculator pipCalculator;
     private int countXOnBar = 0;
     private int countOOnBar = 0;
-
+    private Constants c;
     // NOTE ENCAPSULATE BAR AND BEAROFF INTO OWN CLASS
 
     /**
@@ -28,8 +28,10 @@ public class Board {
     public Board() {
         board = new HashMap<>();
         bar = new HashMap<>();
+        bar1 = new Bar();
         bearOff = new HashMap<>();
         pipCalculator = new PipCalculator(board);
+        c = new Constants();
         initialize();
     }
 
@@ -38,10 +40,10 @@ public class Board {
         for (int i = 1; i <= 24; i++) {
             board.put(i, new ArrayList<>());
         }
-        bar.put("X", new ArrayList<>());
-        bar.put("O", new ArrayList<>());
-        bearOff.put("X", 0);
-        bearOff.put("O", 0);
+        bar.put(c.X, new ArrayList<>());
+        bar.put(c.O, new ArrayList<>());
+        bearOff.put(c.X, 0);
+        bearOff.put(c.O, 0);
         setupInitialBoard();
     }
 
@@ -63,29 +65,31 @@ public class Board {
      // the board
      // Each point on the board is represented by an ArrayList
          for (int i = 0; i < 2; i++) {
-            addChecker(24, new Checker("X", 24));
-            addChecker(1, new Checker("O", 1));
+            addChecker(24, new Checker(c.X, 24));
+            addChecker(1, new Checker(c.O, 1));
          }
 
          for (int i = 0; i < 5; i++) {
-             addChecker(13, new Checker("X", 13));
-             addChecker(12, new Checker("O", 12));
-             addChecker(6, new Checker("X", 6));
-             addChecker(19, new Checker("O", 19));
+             addChecker(13, new Checker(c.X, 13));
+             addChecker(12, new Checker(c.O, 12));
+             addChecker(6, new Checker(c.X, 6));
+             addChecker(19, new Checker(c.O, 19));
          }
 
          for (int i = 0; i < 3; i++) {
-             addChecker(8, new Checker("X", 8));
-             addChecker(17, new Checker("O", 17));
+             addChecker(8, new Checker(c.X, 8));
+             addChecker(17, new Checker(c.O, 17));
          }
     }
+
 
     public Map<Integer, ArrayList<Checker>> getBoardState() {
         return board; // Return the internal board representation
     }
 
     public List<Checker> getBar(String symbol) {
-        return bar.getOrDefault(symbol, new ArrayList<>());
+        return bar1.getCheckers(symbol);
+       // return bar.getOrDefault(symbol, new ArrayList<>());
     }
 
     public int getBearOffCount(String symbol) {
@@ -126,14 +130,15 @@ public class Board {
                 return false;
             }
         } else {
-            ArrayList<Checker> barCheckers = bar.get(player.getSymbol());
+            List<Checker> barCheckers = bar1.getCheckers(player.getSymbol());
+           // ArrayList<Checker> barCheckers = bar.get(player.getSymbol());
             if (barCheckers == null || barCheckers.isEmpty()) {
                 return false;
             }
         }
 
         ArrayList<Checker> endCheckers = board.getOrDefault(end, new ArrayList<>());
-        String opponentSymbol = player.getSymbol().equals("X") ? "O" : "X";
+        String opponentSymbol = player.getSymbol().equals(c.X) ? c.O : c.X;
         int opponentCheckerCount = 0;
         for (Checker c : endCheckers) {
             if (c.getSymbol().equals(opponentSymbol)) {
@@ -163,31 +168,41 @@ public class Board {
         }
 
         Checker checker = board.get(position).remove(0);
-        bar.get(symbol).add(checker);
+        bar1.addToBar(symbol, checker);
+       // bar.get(symbol).add(checker);
 
        // System.out.println("Checker moved to bar: " + symbol);
     }
 
-    public void moveCheckerToBoard(ArrayList<Checker> bar, int end) {
-        Checker checker = bar.removeFirst();
+    public void moveCheckerToBoard(String symbol, int end) {
+        Checker checker = bar1.removeFromBar(symbol);
+       // Checker checker = bar.removeFirst();
         board.get(end).add(checker);
         System.out.println("Moved checker from bar " + " to " + (end));
     }
 
     public void executeMove(int start, int end, Player player) {
-        ArrayList<Checker> barX = bar.get("X");
-        ArrayList<Checker> barO = bar.get("O");
+        ArrayList<Checker> barX = bar.get(c.X);
+        ArrayList<Checker> barO = bar.get(c.O);
 
         ArrayList<Checker> endCheckers = board.get(end);
         ArrayList<Checker> startCheckers = (start == 0 || !board.containsKey(start)) ? null : board.get(start);
 
         if (start == 0) {
-            if (!barX.isEmpty() && barX.get(0).getSymbol().equals(player.getSymbol())) {
-                moveCheckerToBoard(barX, end);
+//            if (!barX.isEmpty() && barX.get(0).getSymbol().equals(player.getSymbol())) {
+//                moveCheckerToBoard(barX, end);
+//                return;
+//            }
+//            if (!barO.isEmpty() && barO.get(0).getSymbol().equals(player.getSymbol())) {
+//                moveCheckerToBoard(barO, end);
+//                return;
+//            }
+            try{
+                moveCheckerToBoard(player.getSymbol(), end);
                 return;
             }
-            if (!barO.isEmpty() && barO.get(0).getSymbol().equals(player.getSymbol())) {
-                moveCheckerToBoard(barO, end);
+            catch (IllegalStateException e) {
+                System.out.println("No checkers on the bar to move");
                 return;
             }
         }
@@ -196,11 +211,12 @@ public class Board {
         if (endCheckers != null && endCheckers.size() == 1 && startCheckers != null && !startCheckers.isEmpty() &&
                 endCheckers.get(0).getPlayer() != startCheckers.get(0).getPlayer()) {
             Checker hitChecker = endCheckers.get(0);
-            if (hitChecker.getSymbol().equals("X"))
-                bar.get("X").add(hitChecker);
-            else if (hitChecker.getSymbol().equals("O")) {
-                bar.get("O").add(hitChecker);
-            }
+//            if (hitChecker.getSymbol().equals("X"))
+//                bar.get("X").add(hitChecker);
+//            else if (hitChecker.getSymbol().equals("O")) {
+//                bar.get("O").add(hitChecker);
+//            }
+            bar1.addToBar(hitChecker.getSymbol(), hitChecker);
             endCheckers.remove(hitChecker);
         }
 
@@ -243,7 +259,8 @@ public class Board {
     }
 
     public boolean areThereCheckersOnTheBar(Player player) {
-        return !bar.getOrDefault(player.getSymbol(), new ArrayList<>()).isEmpty();
+        return !bar1.getCheckers(player.getSymbol()).isEmpty();
+        //return !bar.getOrDefault(player.getSymbol(), new ArrayList<>()).isEmpty();
     }
 
     public List<MoveOption> getListOfLegalMoves(Player player, List<Integer> diceValues) {
@@ -282,7 +299,7 @@ public class Board {
     public List<MoveOption> canWeMakeAMove(int start, List<Integer> diceValues, Player player) {
         Set<MoveOption> potentialMoves = new HashSet<>();
         String playerSymbol = player.getSymbol();
-        int direction = playerSymbol.equals("X") ? -1 : +1;
+        int direction = playerSymbol.equals(c.X) ? -1 : +1;
 
         if (isDoubles(diceValues)) {
             int d = diceValues.get(0);
@@ -326,7 +343,7 @@ public class Board {
     public List<MoveOption> canWeMoveCheckersToBoard(List<Integer> diceValues, Player player) {
         Set<MoveOption> movesFromBar = new HashSet<>();
         String playerSymbol = player.getSymbol();
-        int direction = playerSymbol.equals("X") ? -1 : +1;
+        int direction = playerSymbol.equals(c.X) ? -1 : +1;
 
         if (isDoubles(diceValues)) {
             int d = diceValues.get(0);
@@ -369,10 +386,10 @@ public class Board {
         String playerSymbol = player.getSymbol();
         int start, end;
 
-        if (playerSymbol.equals("X")) {
+        if (playerSymbol.equals(c.X)) {
             start = 1;
             end = 6;
-        } else if (playerSymbol.equals("O")) {
+        } else if (playerSymbol.equals(c.O)) {
             start = 19;
             end = 24;
         } else {
@@ -394,7 +411,7 @@ public class Board {
     public boolean hasCheckerInHomeArea(Player loserPlayer, Player winnerPlayer) {
         int homeStart, homeEnd;
 
-        if (winnerPlayer.getSymbol().equals("X")) {
+        if (winnerPlayer.getSymbol().equals(c.X)) {
             homeStart = 1;
             homeEnd = 6;
         } else {
@@ -414,16 +431,15 @@ public class Board {
     }
 
     public void printCheckerOnBar() {
-        boolean printed = false;
-        if(!bar.get("X").isEmpty() && bar.get("X").size() > countXOnBar) {
-            System.out.print(bar.get("X").get(0).getSymbol() + "     ");
-            printed = true;
-        } else if (!bar.get("O").isEmpty() && bar.get("O").size() > countOOnBar) {
-            System.out.print(bar.get("O").get(0).getSymbol() + "     ");
-            printed = true;
-        }
-
-        if(!printed) {
+        List<Checker> barX = bar1.getCheckers(c.X);
+        List<Checker> barO = bar1.getCheckers(c.O);
+        if(!barX.isEmpty() && barX.size() > countXOnBar) {
+            System.out.print(barX.get(countXOnBar).getSymbol() + "     ");
+            countXOnBar++;
+        } else if (!barO.isEmpty() && barO.size() > countOOnBar) {
+            System.out.print(barO.get(countOOnBar).getSymbol() + "     ");
+            countOOnBar++;
+        } else {
             System.out.print("BAR   ");
         }
     }
