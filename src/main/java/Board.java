@@ -58,28 +58,27 @@ public class Board {
         board.get(position).add(checker);
     }
 
-    // private void setupInitialBoard() {
-    // // Each loop is a counter for how many checkers should be added to each point
-    // on
-    // // the board
-    // // Each point on the board is represented by an ArrayList
-    // for (int i = 0; i < 2; i++) {
-    // addChecker(24, new Checker("X", 24));
-    // addChecker(1, new Checker("O", 1));
-    // }
+     private void setupInitialBoard() {
+     // Each loop is a counter for how many checkers should be added to each point on
+     // the board
+     // Each point on the board is represented by an ArrayList
+         for (int i = 0; i < 2; i++) {
+            addChecker(24, new Checker("X", 24));
+            addChecker(1, new Checker("O", 1));
+         }
 
-    // for (int i = 0; i < 5; i++) {
-    // addChecker(13, new Checker("X", 13));
-    // addChecker(12, new Checker("O", 12));
-    // addChecker(6, new Checker("X", 6));
-    // addChecker(19, new Checker("O", 19));
-    // }
+         for (int i = 0; i < 5; i++) {
+             addChecker(13, new Checker("X", 13));
+             addChecker(12, new Checker("O", 12));
+             addChecker(6, new Checker("X", 6));
+             addChecker(19, new Checker("O", 19));
+         }
 
-    // for (int i = 0; i < 3; i++) {
-    // addChecker(8, new Checker("X", 8));
-    // addChecker(17, new Checker("O", 17));
-    // }
-    // }
+         for (int i = 0; i < 3; i++) {
+             addChecker(8, new Checker("X", 8));
+             addChecker(17, new Checker("O", 17));
+         }
+    }
 
     public Map<Integer, ArrayList<Checker>> getBoardState() {
         return board; // Return the internal board representation
@@ -140,8 +139,6 @@ public class Board {
         }
         Checker check = board.get(start).remove(0);
         board.get(end).add(check);
-        // System.out.println("Moved checker from position " + (start) + " to " +
-        // (end));
     }
 
     public void moveCheckerToBar(String symbol, int position) {
@@ -193,53 +190,6 @@ public class Board {
         moveChecker(start, end);
     }
 
-    // // Initializes the board with some example checkers
-    // private void initialize() {
-    // board = new ArrayList<>();
-    // for (int i = 1; i <= 24; i++) {
-    // board.add(new ArrayList<>());
-    // board1.put(i, new ArrayList<>());
-    // }
-
-    // bar.put("X", new ArrayList<>());
-    // bar.put("O", new ArrayList<>());
-    // bearOff.put("X", 0);
-    // bearOff.put("O", 0);
-    // setupInitialBoard();
-    // }
-
-    // private void addChecker(int pointIndex, Checker checker) {
-    // if (pointIndex >= 1 && pointIndex <= 24) {
-    // board1.get(pointIndex).add(checker);
-    // } else {
-    // System.out.println("Invalid point index");
-    // }
-
-    // // board1.get(pointIndex+1).add(checker);
-    // }
-
-    private void setupInitialBoard() {
-        // Each loop is a counter for how many checkers should be added to each point
-        // on
-        // the board
-        // Each point on the board is represented by an ArrayList
-        for (int i = 0; i < 2; i++) {
-            addChecker(1, new Checker("X", 1));
-            addChecker(24, new Checker("O", 24));
-        }
-
-        for (int i = 0; i < 5; i++) {
-            addChecker(12, new Checker("X", 12));
-            addChecker(13, new Checker("O", 13));
-            addChecker(19, new Checker("X", 19));
-            addChecker(6, new Checker("O", 6));
-        }
-
-        for (int i = 0; i < 3; i++) {
-            addChecker(17, new Checker("X", 17));
-            addChecker(8, new Checker("O", 8));
-        }
-    }
 
     // To find maximum number of checkers currently in a point to know the number of
     // rows needed
@@ -315,7 +265,7 @@ public class Board {
     public List<MoveOption> canWeMakeAMove(int start, List<Integer> diceValues, Player player) {
         Set<MoveOption> potentialMoves = new HashSet<>();
         String playerSymbol = player.getSymbol();
-        int direction = playerSymbol.equals("X") ? +1 : -1;
+        int direction = playerSymbol.equals("X") ? -1 : +1;
 
         if (isDoubles(diceValues)) {
             int d = diceValues.get(0);
@@ -359,7 +309,7 @@ public class Board {
     public List<MoveOption> canWeMoveCheckersToBoard(List<Integer> diceValues, Player player) {
         Set<MoveOption> movesFromBar = new HashSet<>();
         String playerSymbol = player.getSymbol();
-        int direction = playerSymbol.equals("X") ? +1 : -1;
+        int direction = playerSymbol.equals("X") ? -1 : +1;
 
         if (isDoubles(diceValues)) {
             int d = diceValues.get(0);
