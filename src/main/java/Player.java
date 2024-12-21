@@ -16,5 +16,7 @@ public class Player{
     }
     public String getSymbol(){return symbol;}
 
-
+    public void addScore(int increment) {
+        this.score += increment;//
+    }
 }

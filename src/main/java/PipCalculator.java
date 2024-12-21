@@ -66,7 +66,7 @@ public class PipCalculator {
             int point = checkers.size();
 
             if (point > 0 && checkers.get(0).getSymbol().equals(playerSymbol)) {
-                int pipScore = playerSymbol.equals("X") ? (25 - position) * point : (position) * point;
+                int pipScore = playerSymbol.equals("X") ? (position) * point : (25 - position) * point;
                 totalPipCount += pipScore;
             }
         }

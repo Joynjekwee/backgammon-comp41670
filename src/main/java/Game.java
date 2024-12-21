@@ -102,6 +102,7 @@ public class Game {
             String userInput = in.nextLine();
 
             if (userInput.equalsIgnoreCase("quit")) {
+                determineMatchScore();
                 stillPlaying = false; // Exit the loop on quit
                 break;
             }
@@ -110,7 +111,7 @@ public class Game {
 
             if (isGameOver()) {
                 System.out.printf("Game Over! Congratulations, %s won!\n", winner);
-                printEndOfGameScore();
+                determineResultType();
                 stillPlaying = false;
             }
         }
@@ -208,6 +209,45 @@ public class Game {
                 System.out.println("Invalid input, please type commands available.");
                 break;
         }
+    }
+
+    private void determineMatchScore() {
+        int p1Pip = board.getPipCount(player1);
+        int p2Pip = board.getPipCount(player2);
+
+        if (p1Pip < p2Pip) {
+            player1.addScore(1);
+        } else if (p2Pip < p1Pip) {
+            player2.addScore(1);
+        } else {
+            System.out.println("It's a tie! No match score awarded.");
+        }
+
+        board.display(currentPlayer, player1.getScore(), player2.getScore());
+    }
+
+    private void determineResultType() {
+        Player winnerPlayer = winner.equals(player1.getName()) ? player1 : player2;
+        Player loserPlayer = winnerPlayer == player1 ? player2 : player1;
+
+        int loserBearOff = loserPlayer.getSymbol().equals("X") ? board.getBearoffAreaPlayer1().size() : board.getBearoffAreaPlayer2().size();
+        boolean hasCheckerOnBar = !board.getBar(loserPlayer.getSymbol()).isEmpty();
+        boolean hasCheckerInWinnerHome = board.hasCheckerInHomeArea(loserPlayer, winnerPlayer);
+
+        if (loserBearOff == 0) {
+            if (hasCheckerOnBar || hasCheckerInWinnerHome) {
+                System.out.println("The game ended in a Backgammon");
+                winnerPlayer.addScore(3);
+            } else {
+                System.out.println("The game ended in a Gammon"); //
+                winnerPlayer.addScore(2);
+            }
+        } else {
+            System.out.println("The game ended in a Single");
+            winnerPlayer.addScore(1);
+        }
+
+        board.display(currentPlayer, player1.getScore(), player2.getScore());
     }
 
     private void processTestFile(String filename) {

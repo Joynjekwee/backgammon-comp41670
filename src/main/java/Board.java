@@ -84,6 +84,10 @@ public class Board {
         return board; // Return the internal board representation
     }
 
+    public List<Checker> getBar(String symbol) {
+        return bar.getOrDefault(symbol, new ArrayList<>());
+    }
+
     public int getBearOffCount(String symbol) {
         return bearOff.getOrDefault(symbol, 0);
     }
@@ -98,6 +102,17 @@ public class Board {
 
     public ArrayList<Checker> getBearoffAreaPlayer2() {
         return bearoffAreaPlayer2;
+    }
+
+
+    public int getPipCount(Player player) {
+        return pipCalculator.getPipCount(player);
+    }
+
+    public void display(Player player, int player1Score, int player2Score) {
+        // Display the match score at the top
+        System.out.println("Match Score: Player1(X) = " + player1Score + " | Player2(O) = " + player2Score);
+        System.out.println(); // Line break for clarity
     }
 
     public boolean isMoveValid(int start, int end, Player player) {
@@ -149,6 +164,8 @@ public class Board {
 
         Checker checker = board.get(position).remove(0);
         bar.get(symbol).add(checker);
+
+       // System.out.println("Checker moved to bar: " + symbol);
     }
 
     public void moveCheckerToBoard(ArrayList<Checker> bar, int end) {
@@ -374,14 +391,39 @@ public class Board {
         return true;
     }
 
-    public void printCheckerOnBar() {
-        if (!bar.get("X").isEmpty() && bar.get("X").size() > countXOnBar) {
-            countXOnBar += 1;
-            System.out.print(bar.get("X").get(0).getSymbol() + "     ");
-        } else if (!bar.get("O").isEmpty() && bar.get("O").size() > countOOnBar) {
-            countOOnBar += 1;
-            System.out.print(bar.get("O").get(0).getSymbol() + "     ");
+    public boolean hasCheckerInHomeArea(Player loserPlayer, Player winnerPlayer) {
+        int homeStart, homeEnd;
+
+        if (winnerPlayer.getSymbol().equals("X")) {
+            homeStart = 1;
+            homeEnd = 6;
         } else {
+            homeStart = 19;
+            homeEnd = 24;
+        }
+
+        for (int i = homeStart; i <= homeEnd; i++) {
+            List<Checker> checkersAtPosition = getCheckersAt(i);
+            for (Checker checker : checkersAtPosition) {
+                if (checker.getSymbol().equals(loserPlayer.getSymbol())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void printCheckerOnBar() {
+        boolean printed = false;
+        if(!bar.get("X").isEmpty() && bar.get("X").size() > countXOnBar) {
+            System.out.print(bar.get("X").get(0).getSymbol() + "     ");
+            printed = true;
+        } else if (!bar.get("O").isEmpty() && bar.get("O").size() > countOOnBar) {
+            System.out.print(bar.get("O").get(0).getSymbol() + "     ");
+            printed = true;
+        }
+
+        if(!printed) {
             System.out.print("BAR   ");
         }
     }
