@@ -58,27 +58,28 @@ public class Board {
         board.get(position).add(checker);
     }
 
-    private void setupInitialBoard() {
-        // Each loop is a counter for how many checkers should be added to each point on
-        // the board
-        // Each point on the board is represented by an ArrayList
-        for (int i = 0; i < 2; i++) {
-            addChecker(24, new Checker("X", 24));
-            addChecker(1, new Checker("O", 1));
-        }
+    // private void setupInitialBoard() {
+    // // Each loop is a counter for how many checkers should be added to each point
+    // on
+    // // the board
+    // // Each point on the board is represented by an ArrayList
+    // for (int i = 0; i < 2; i++) {
+    // addChecker(24, new Checker("X", 24));
+    // addChecker(1, new Checker("O", 1));
+    // }
 
-        for (int i = 0; i < 5; i++) {
-            addChecker(13, new Checker("X", 13));
-            addChecker(12, new Checker("O", 12));
-            addChecker(6, new Checker("X", 6));
-            addChecker(19, new Checker("O", 19));
-        }
+    // for (int i = 0; i < 5; i++) {
+    // addChecker(13, new Checker("X", 13));
+    // addChecker(12, new Checker("O", 12));
+    // addChecker(6, new Checker("X", 6));
+    // addChecker(19, new Checker("O", 19));
+    // }
 
-        for (int i = 0; i < 3; i++) {
-            addChecker(8, new Checker("X", 8));
-            addChecker(17, new Checker("O", 17));
-        }
-    }
+    // for (int i = 0; i < 3; i++) {
+    // addChecker(8, new Checker("X", 8));
+    // addChecker(17, new Checker("O", 17));
+    // }
+    // }
 
     public Map<Integer, ArrayList<Checker>> getBoardState() {
         return board; // Return the internal board representation
@@ -106,7 +107,7 @@ public class Board {
         }
 
         if (start != 0) {
-            ArrayList<Checker> startCheckers = board1.getOrDefault(start, new ArrayList<>());
+            ArrayList<Checker> startCheckers = board.getOrDefault(start, new ArrayList<>());
             if (startCheckers.isEmpty() || !startCheckers.get(0).getSymbol().equals(player.getSymbol())) {
                 return false;
             }
@@ -117,7 +118,7 @@ public class Board {
             }
         }
 
-        ArrayList<Checker> endCheckers = board1.getOrDefault(end, new ArrayList<>());
+        ArrayList<Checker> endCheckers = board.getOrDefault(end, new ArrayList<>());
         String opponentSymbol = player.getSymbol().equals("X") ? "O" : "X";
         int opponentCheckerCount = 0;
         for (Checker c : endCheckers) {
@@ -139,7 +140,8 @@ public class Board {
         }
         Checker check = board.get(start).remove(0);
         board.get(end).add(check);
-        System.out.println("Moved checker from position " + (start) + " to " + (end));
+        // System.out.println("Moved checker from position " + (start) + " to " +
+        // (end));
     }
 
     public void moveCheckerToBar(String symbol, int position) {
@@ -162,8 +164,8 @@ public class Board {
         ArrayList<Checker> barX = bar.get("X");
         ArrayList<Checker> barO = bar.get("O");
 
-        ArrayList<Checker> endCheckers = board1.get(end);
-        ArrayList<Checker> startCheckers = (start == 0 || !board1.containsKey(start)) ? null : board1.get(start);
+        ArrayList<Checker> endCheckers = board.get(end);
+        ArrayList<Checker> startCheckers = (start == 0 || !board.containsKey(start)) ? null : board.get(start);
 
         if (start == 0) {
             if (!barX.isEmpty() && barX.get(0).getSymbol().equals(player.getSymbol())) {
@@ -191,33 +193,34 @@ public class Board {
         moveChecker(start, end);
     }
 
-    // Initializes the board with some example checkers
-    private void initialize() {
-        board = new ArrayList<>();
-        for (int i = 1; i <= 24; i++) {
-            board.add(new ArrayList<>());
-            board1.put(i, new ArrayList<>());
-        }
+    // // Initializes the board with some example checkers
+    // private void initialize() {
+    // board = new ArrayList<>();
+    // for (int i = 1; i <= 24; i++) {
+    // board.add(new ArrayList<>());
+    // board1.put(i, new ArrayList<>());
+    // }
 
-        bar.put("X", new ArrayList<>());
-        bar.put("O", new ArrayList<>());
-        bearOff.put("X", 0);
-        bearOff.put("O", 0);
-        setupInitialBoard();
-    }
+    // bar.put("X", new ArrayList<>());
+    // bar.put("O", new ArrayList<>());
+    // bearOff.put("X", 0);
+    // bearOff.put("O", 0);
+    // setupInitialBoard();
+    // }
 
-    private void addChecker(int pointIndex, Checker checker) {
-        if (pointIndex >= 1 && pointIndex <= 24) {
-            board1.get(pointIndex).add(checker);
-        } else {
-            System.out.println("Invalid point index");
-        }
+    // private void addChecker(int pointIndex, Checker checker) {
+    // if (pointIndex >= 1 && pointIndex <= 24) {
+    // board1.get(pointIndex).add(checker);
+    // } else {
+    // System.out.println("Invalid point index");
+    // }
 
-        // board1.get(pointIndex+1).add(checker);
-    }
+    // // board1.get(pointIndex+1).add(checker);
+    // }
 
     private void setupInitialBoard() {
-        // Each loop is a counter for how many checkers should be added to each point on
+        // Each loop is a counter for how many checkers should be added to each point
+        // on
         // the board
         // Each point on the board is represented by an ArrayList
         for (int i = 0; i < 2; i++) {
@@ -242,7 +245,7 @@ public class Board {
     // rows needed
     public int findCurrentMaxRows() {
         int maxRows = 0;
-        for (ArrayList<Checker> point : board1.values()) {
+        for (ArrayList<Checker> point : board.values()) {
             if (point.size() > maxRows) {
                 maxRows = point.size();
             }
@@ -263,7 +266,7 @@ public class Board {
 
     public ArrayList<Checker> getCurrentPlayerCheckers(Player player) {
         ArrayList<Checker> checkers = new ArrayList<>();
-        for (Map.Entry<Integer, ArrayList<Checker>> entry : board1.entrySet()) {
+        for (Map.Entry<Integer, ArrayList<Checker>> entry : board.entrySet()) {
             ArrayList<Checker> point = entry.getValue();
             if (!point.isEmpty() && point.get(0).getSymbol().equals(player.getSymbol())) {
                 checkers.add(point.get(0));

@@ -41,7 +41,7 @@ backgammon-project/
 │   │       └── Validation.java
 │   └── test/
 │       └── java/
-│           └── GameTest.java    # Unit tests
+│           └── Main.java    # Unit tests
 ├── .gitignore            # Files ignored by Git
 
 ### Compile the Project

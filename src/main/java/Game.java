@@ -99,12 +99,11 @@ public class Game {
         while (stillPlaying) {
             System.out.println("Current Player: " + currentPlayer.getName() + "(" + currentPlayer.getSymbol() + ")");
             System.out.print("User Input: ");
-            String userInput = in.nextLine().trim();
+            String userInput = in.nextLine();
 
             if (userInput.equalsIgnoreCase("quit")) {
                 stillPlaying = false; // Exit the loop on quit
-            } else {
-                processUserCommand(userInput);
+                break;
             }
 
             processUserCommand(userInput);
@@ -128,7 +127,7 @@ public class Game {
             case "roll":
                 // For testing specific dice rolls
                 dice.enableManualMode();
-                dice.setManualDice(Arrays.asList(1, 8)); // Set dice to doubles [1, 8]
+                dice.setManualDice(Arrays.asList(3, 3)); // Set dice to doubles [1, 8]
                 dice.roll(); // This will use the manual dice values
                 // dice.disableManualMode();
                 // dice.roll();
@@ -212,18 +211,21 @@ public class Game {
     }
 
     private void processTestFile(String filename) {
-        try {
-            File myObj = new File(filename);
-            Scanner myReader = new Scanner(myObj);
+        while (true) {
+            try {
+                File myObj = new File(filename);
+                Scanner myReader = new Scanner(myObj);
 
-            while (myReader.hasNextLine()) {
-                String command = myReader.nextLine().trim();
-                processUserCommand(command);
+                while (myReader.hasNextLine()) {
+                    String command = myReader.nextLine().trim();
+                    processUserCommand(command);
+                }
+                myReader.close();
+                break;
+            } catch (FileNotFoundException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
             }
-            myReader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
         }
     }
 
