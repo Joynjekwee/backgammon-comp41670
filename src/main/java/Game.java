@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Game {
@@ -21,6 +23,7 @@ public class Game {
 
     /**
      * Creates a new Game instance with the specified players
+     * 
      * @param player1 the first player
      * @param player2 the second player
      */
@@ -29,18 +32,16 @@ public class Game {
         this.player1 = player1;
         this.player2 = player2;
         board = new Board();
-
     }
 
     /**
      * Starts the game, displaying player details and initializing gameplay.
      */
-    public void start(){
+    public void start() {
         System.out.println();
         System.out.print("Player 1: " + player1.getName() + " (" + player1.getSymbol() + ")" + "\t\t\t\t"
                 + "Player 2: " + player2.getName() + " (" + player2.getSymbol() + ")" + "\n");
         System.out.println();
-
     }
 
     /**
@@ -49,7 +50,7 @@ public class Game {
      * @return The player who rolled the highest number.
      */
 
-    public Player whoGoesFirst(){
+    public Player whoGoesFirst() {
         System.out.println("Each player will roll to see who goes first.");
         int player1rolled;
         int player2rolled;
@@ -59,29 +60,26 @@ public class Game {
             System.out.println(player1.getName() + " rolled " + player1rolled);
             System.out.println(player2.getName() + " rolled " + player2rolled);
             if (player1rolled != player2rolled) {
-               if (player1rolled > player2rolled) {
-                   System.out.println(player1.getName() + " goes first");
-                   System.out.println();
-                   return player1;
-               }
-               else {
-                   System.out.println(player2.getName() + " goes first");
-                   System.out.println();
-                   return player2;
-               }
+                if (player1rolled > player2rolled) {
+                    System.out.println(player1.getName() + " goes first");
+                    System.out.println();
+                    return player1;
+                } else {
+                    System.out.println(player2.getName() + " goes first");
+                    System.out.println();
+                    return player2;
+                }
             }
 
             System.out.println("Roll Again");
         }
-
-
     }
 
     /**
      * Displays a list of available user commands.
      */
 
-    public void printCommands(){
+    public void printCommands() {
         System.out.println("=========================================================");
         System.out.println("Possible commands to input");
         System.out.println("1.Roll");
@@ -93,24 +91,25 @@ public class Game {
         System.out.println();
     }
 
-    public void playGame(){
+    public void playGame() {
         currentPlayer = whoGoesFirst();
         start();
         board.display(currentPlayer);
 
         while (stillPlaying) {
-            System.out.println("Current Player: " + currentPlayer.getName() + "("  + currentPlayer.getSymbol() + ")" );
-            System.out.print("Enter your command: ");
-            String userInput = in.nextLine();
+            System.out.println("Current Player: " + currentPlayer.getName() + "(" + currentPlayer.getSymbol() + ")");
+            System.out.print("User Input: ");
+            String userInput = in.nextLine().trim();
 
-            if(userInput.equalsIgnoreCase("quit")) {
+            if (userInput.equalsIgnoreCase("quit")) {
                 stillPlaying = false; // Exit the loop on quit
-                break;
+            } else {
+                processUserCommand(userInput);
             }
 
             processUserCommand(userInput);
 
-            if(isGameOver()){
+            if (isGameOver()) {
                 System.out.printf("Game Over! Congratulations, %s won!\n", winner);
                 printEndOfGameScore();
                 stillPlaying = false;
@@ -124,10 +123,60 @@ public class Game {
      * @param userInput The command entered by the user.
      */
 
-    private void processUserCommand(String userInput){
+    private void processUserCommand(String userInput) {
         switch (userInput.toLowerCase()) {
             case "roll":
-                handleRollCommand();
+                // For testing specific dice rolls
+                dice.enableManualMode();
+                dice.setManualDice(Arrays.asList(1, 8)); // Set dice to doubles [1, 8]
+                dice.roll(); // This will use the manual dice values
+                // dice.disableManualMode();
+                // dice.roll();
+                String dieResults = dice.getDiceResults();
+                System.out.println("Roll Result: " + dieResults);
+                diceValues = new ArrayList<>(dice.getMoves());
+                // diceValues = dice.getMoves();
+
+                // Get legal moves from the board
+                List<MoveOption> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
+
+                // Display the board before making moves
+                board.display(currentPlayer);
+
+                // Loop until all dice are used or no moves remain
+                while (!diceValues.isEmpty()) {
+                    if (legalMoves.isEmpty()) {
+                        System.out.println("No more legal moves. Switching turn.");
+                        break;
+                    }
+
+                    System.out.println(
+                            "Enter your move in the format 'start to end' (e.g., '5 to 12') or type 'hint' for suggestions:");
+                    String moveInput = in.nextLine().trim();
+
+                    if (moveInput.equalsIgnoreCase("hint")) {
+                        printLegalMoves(legalMoves);
+                        continue;
+                    }
+
+                    MoveOption chosenMove = parseUserMoveInput(moveInput, legalMoves);
+                    if (chosenMove == null) {
+                        System.out.println("Invalid move. Please try again.");
+                        continue;
+                    }
+
+                    // Execute the chosen move
+                    playMove(chosenMove, currentPlayer, diceValues);
+
+                    // Display the board after the move
+                    board.display(currentPlayer);
+
+                    // Recalculate legal moves with remaining dice
+                    legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
+                }
+
+                currentPlayer = switchPlayer(currentPlayer, player1, player2);
+                board.display(currentPlayer);
                 break;
 
             case "quit":
@@ -137,7 +186,13 @@ public class Game {
                 break;
 
             case "hint":
-                handleHintCommand();
+                List<MoveOption> hints = board.getListOfLegalMoves(currentPlayer, diceValues);
+                if (hints.isEmpty()) {
+                    System.out.println("No legal moves available.");
+                } else {
+                    System.out.println("Here are some legal moves:");
+                    printLegalMoves(hints);
+                }
                 break;
 
             case "pip":
@@ -145,65 +200,14 @@ public class Game {
                 break;
 
             case "test":
-                handleTestCommand();
+                System.out.println("Input filename:");
+                String filename = in.nextLine();
+                processTestFile(filename);
                 break;
 
             default:
                 System.out.println("Invalid input, please type commands available.");
                 break;
-
-        }
-    }
-
-    private void handleTestCommand() {
-        System.out.println("Input filename:");
-        String filename = in.nextLine();
-        processTestFile(filename);
-    }
-
-    private void handleHintCommand() {
-        ArrayList<String> hints = board.getListOfLegalMoves(currentPlayer, diceValues);
-        if (hints.isEmpty()) {
-            System.out.println("No legal moves available.");
-        } else {
-            System.out.println("Here are some legal moves:");
-            printLegalMoves(hints);
-        }
-    }
-
-    private void handleRollCommand() {
-        dice.roll();
-        String dieResults = dice.getDiceResults();
-        System.out.println("Roll Result: " + dieResults);
-        diceValues = dice.getMoves();
-
-        ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
-        if (legalMoves.isEmpty()) {
-            System.out.println("No legal moves available. Switching turn.");
-        } else {
-            handlePlayerMove(legalMoves);
-        }
-
-        currentPlayer = switchPlayer(currentPlayer,player1,player2);
-        board.display(currentPlayer);
-    }
-
-    private void handlePlayerMove(ArrayList<String> legalMoves) {
-        // Ask the player to input their move
-        boolean validMove = false;
-        while (!validMove) {
-            System.out.print("Enter your move as: pos1 to pos2 (or type 'hint' to see suggestions): ");
-            String moveInput = in.nextLine();
-
-            if (moveInput.equalsIgnoreCase("hint")) {
-                System.out.println("Here are some legal moves:");
-                printLegalMoves(legalMoves);
-            } else {
-                validMove = validateAndExecuteMove(moveInput, currentPlayer);
-                if (!validMove) {
-                    System.out.println("Invalid move. Try again.");
-                }
-            }
         }
     }
 
@@ -213,9 +217,7 @@ public class Game {
             Scanner myReader = new Scanner(myObj);
 
             while (myReader.hasNextLine()) {
-                String command = myReader.nextLine();
-                //System.out.println(command);
-
+                String command = myReader.nextLine().trim();
                 processUserCommand(command);
             }
             myReader.close();
@@ -225,29 +227,72 @@ public class Game {
         }
     }
 
-    private boolean validateAndExecuteMove(String moveInput, Player currentPlayer) {
-        try {
-            String[] parts = moveInput.split("to");
-            int start = Integer.parseInt(parts[0].trim()) ;
-            int end = Integer.parseInt(parts[1].trim()) ;
-
-            ArrayList<String> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
-            for (String move : legalMoves) {
-                if (move.contains("Initial position: " + (start)) &&
-                        move.contains("Final position: " + (end))) {
-                    board.executeMove(start, end, currentPlayer);
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Invalid format. Use the format '13 to 18'.");
+    /**
+     * Helper to get displayed index based on current player's perspective.
+     */
+    private int displayedIndex(Player player, int actualIndex) {
+        if (player.getSymbol().equals("O")) {
+            return 25 - actualIndex;
         }
-        return false;
+        return actualIndex;
     }
 
-    public void printLegalMoves(ArrayList<String> legalMoves) {
-        for(int i = 0; i < legalMoves.size(); i++) {
-            System.out.println((i+1) + ". " + legalMoves.get(i));
+    /**
+     * Parses user input in the format "start to end" from the player's perspective.
+     * Convert from player's displayed perspective back to actual board index.
+     */
+    private MoveOption parseUserMoveInput(String input, List<MoveOption> legalMoves) {
+        String[] parts = input.split("to");
+        if (parts.length != 2) {
+            return null;
+        }
+
+        try {
+            int displayedStart = Integer.parseInt(parts[0].trim());
+            int displayedEnd = Integer.parseInt(parts[1].trim());
+
+            // Convert displayed indices to actual indices
+            int actualStart = (currentPlayer.getSymbol().equals("O")) ? (25 - displayedStart) : displayedStart;
+            int actualEnd = (currentPlayer.getSymbol().equals("O")) ? (25 - displayedEnd) : displayedEnd;
+
+            for (MoveOption move : legalMoves) {
+                if (move.getStartPos() == actualStart && move.getEndPos() == actualEnd) {
+                    return move;
+                }
+            }
+        } catch (NumberFormatException e) {
+            return null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Execute the given MoveOption and remove the used dice.
+     * Print the executed move from the player's perspective.
+     */
+    public void playMove(MoveOption chosenMove, Player currentPlayer, List<Integer> diceValues) {
+        board.executeMove(chosenMove.getStartPos(), chosenMove.getEndPos(), currentPlayer);
+        for (Integer usedDie : chosenMove.getDiceUsed()) {
+            diceValues.remove(usedDie);
+        }
+
+        // Print move result from player's perspective
+        int dispStart = displayedIndex(currentPlayer, chosenMove.getStartPos());
+        int dispEnd = displayedIndex(currentPlayer, chosenMove.getEndPos());
+        System.out.println("Moved checker from position " + dispStart + " to " + dispEnd);
+    }
+
+    /**
+     * Print legal moves from the player's perspective.
+     */
+    public void printLegalMoves(List<MoveOption> legalMoves) {
+        for (int i = 0; i < legalMoves.size(); i++) {
+            MoveOption move = legalMoves.get(i);
+            // Convert actual start/end to displayed for current player
+            int dispStart = displayedIndex(currentPlayer, move.getStartPos());
+            int dispEnd = displayedIndex(currentPlayer, move.getEndPos());
+            System.out.println((i + 1) + ". " + dispStart + " to " + dispEnd + " using " + move.getDiceUsed());
         }
     }
 
@@ -257,7 +302,7 @@ public class Game {
     }
 
     public boolean isGameOver() {
-        if(board.getBearoffAreaPlayer1().size() == 15) {
+        if (board.getBearoffAreaPlayer1().size() == 15) {
             winner = player1.getName();
             return true;
         } else if (board.getBearoffAreaPlayer2().size() == 15) {
@@ -268,19 +313,13 @@ public class Game {
     }
 
     public static Player switchPlayer(Player currentPlayer, Player player1, Player player2) {
-
         // If current player is player1, switch to player2, otherwise switch to player1
         if (currentPlayer == player1) {
             System.out.println("The Current Player is Player: " + player2.getName() + " (" + player2.getSymbol() + ")");
             return player2;
         } else {
-            System.out.println("The Current Player is Player: " + player1.getName()+ " (" + player1.getSymbol() + ")");
+            System.out.println("The Current Player is Player: " + player1.getName() + " (" + player1.getSymbol() + ")");
             return player1;
         }
     }
 }
-
-
-
-
-
