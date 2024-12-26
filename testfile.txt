@@ -1,4 +1,10 @@
+pip
+hint
+jooo
 roll
 here
-fuckyomama
+roll
+5 to 8
+6 to 7
+more moves
 quit

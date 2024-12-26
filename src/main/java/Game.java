@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,12 +14,13 @@ public class Game {
     private final Player player1, player2;
     private Player currentPlayer;
     private final Board board;
-    private Scanner in = new Scanner(System.in);
     private Dice dice = new Dice();
     private ArrayList<Integer> diceValues = new ArrayList<>();
     private String winner;
     private boolean stillPlaying = true;
     private Constants constants;
+    private List<String> commandQueue = new ArrayList<>();
+    private boolean testMode = false;
 
     /**
      * Creates a new Game instance with the specified players
@@ -85,10 +85,11 @@ public class Game {
         System.out.println("=========================================================");
         System.out.println("Possible commands to input");
         System.out.println("1.Roll");
-        System.out.println("2.Quit");
+        System.out.println("2.Double");
         System.out.println("3.Hint");
         System.out.println("4.Pip");
         System.out.println("5.Test");
+        System.out.println("6.Quit");
         System.out.println("=========================================================");
         System.out.println();
     }
@@ -101,9 +102,10 @@ public class Game {
         while (stillPlaying) {
             System.out.println("Current Player: " + currentPlayer.getName() + "(" + currentPlayer.getSymbol() + ")");
             System.out.print("User Input: ");
-            String userInput = in.nextLine();
+            String userInput = getUserInput();
 
             if (userInput.equalsIgnoreCase("quit")) {
+                System.out.println("Quitting Game Now:");
                 determineMatchScore();
                 stillPlaying = false; // Exit the loop on quit
                 break;
@@ -122,79 +124,17 @@ public class Game {
     /**
      * Processes the user's command and takes the appropriate action.
      *
-     * @param userInput The command entered by the user.
+     * @param command The command entered by the user.
      */
 
-    private void processUserCommand(String userInput) {
-        switch (userInput.toLowerCase()) {
+    private void processUserCommand(String command) {
+        switch (command.toLowerCase()) {
             case "roll":
-                // For testing specific dice rolls
-                dice.enableManualMode();
-                dice.setManualDice(Arrays.asList(3, 3)); // Set dice to doubles [1, 8]
-                dice.roll(); // This will use the manual dice values
-                // dice.disableManualMode();
-                // dice.roll();
-                String dieResults = dice.getDiceResults();
-                System.out.println("Roll Result: " + dieResults);
-                diceValues = new ArrayList<>(dice.getMoves());
-                // diceValues = dice.getMoves();
-
-                // Get legal moves from the board
-                List<MoveOption> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
-
-                // Display the board before making moves
-                board.display(currentPlayer);
-
-                // Loop until all dice are used or no moves remain
-                while (!diceValues.isEmpty()) {
-                    if (legalMoves.isEmpty()) {
-                        System.out.println("No more legal moves. Switching turn.");
-                        break;
-                    }
-
-                    System.out.println(
-                            "Enter your move in the format 'start to end' (e.g., '5 to 12') or type 'more moves' for suggestions:");
-                    String moveInput = in.nextLine().trim();
-
-                    if (moveInput.equalsIgnoreCase("more moves")) {
-                        printLegalMoves(legalMoves);
-                        continue;
-                    }
-
-                    MoveOption chosenMove = parseUserMoveInput(moveInput, legalMoves);
-                    if (chosenMove == null) {
-                        System.out.println("Invalid move. Please try again.");
-                        continue;
-                    }
-
-                    // Execute the chosen move
-                    playMove(chosenMove, currentPlayer, diceValues);
-
-                    // Display the board after the move
-                    board.display(currentPlayer);
-
-                    // Recalculate legal moves with remaining dice
-                    legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
-                }
-
-                currentPlayer = switchPlayer(currentPlayer, player1, player2);
-                board.display(currentPlayer);
+                handleRoll();
                 break;
 
-            case "quit":
-                System.out.println("Quitting Game Now:");
-                printEndOfGameScore();
-                stillPlaying = false;
-                break;
-
-            case "more moves":
-                List<MoveOption> hints = board.getListOfLegalMoves(currentPlayer, diceValues);
-                if (hints.isEmpty()) {
-                    System.out.println("No legal moves available.");
-                } else {
-                    System.out.println("Here are some legal moves:");
-                    printLegalMoves(hints);
-                }
+            case "moves":
+                handleMoreLegalMovesCommand();
                 break;
 
             case "pip":
@@ -202,9 +142,7 @@ public class Game {
                 break;
 
             case "test":
-                System.out.println("Input filename:");
-                String filename = in.nextLine();
-                processTestFile(filename);
+                handleTestCommand();
                 break;
 
             case "hint":
@@ -215,6 +153,81 @@ public class Game {
                 System.out.println("Invalid input, please type commands available.");
                 break;
         }
+    }
+
+    private void handleTestCommand() {
+        System.out.println("Input filename (must be of name.txt format):");
+        processTestFile(getUserInput());
+    }
+
+    private void handleMoreLegalMovesCommand() {
+        List<MoveOption> hints = board.getListOfLegalMoves(currentPlayer, diceValues);
+        if (hints.isEmpty()) {
+            System.out.println("No legal moves available.");
+        } else {
+            System.out.println("Here are some legal moves:");
+            printLegalMoves(hints);
+        }
+    }
+
+    private void handleRoll() {
+        // For testing specific dice rolls
+        //  dice.enableManualMode();
+        //  dice.setManualDice(Arrays.asList(3, 3)); // Set dice to doubles [1, 8]
+        dice.roll(); // This will use the manual dice values
+        // dice.disableManualMode();
+        // dice.roll();
+        String dieResults = dice.getDiceResults();
+        System.out.println("Roll Result: " + dieResults);
+        diceValues = new ArrayList<>(dice.getMoves());
+        // diceValues = dice.getMoves();
+
+        // Get legal moves from the board
+        List<MoveOption> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
+
+        // Display the board before making moves
+        board.display(currentPlayer);
+
+        // Loop until all dice are used or no moves remain
+        while (!diceValues.isEmpty()) {
+            if (legalMoves.isEmpty()) {
+                System.out.println("No more legal moves. Switching turn.");
+                break;
+            }
+
+            if(testMode) {
+                System.out.println("Test mode: Executing first available move....");
+                MoveOption chosenMove = legalMoves.get(0);
+                playMove(chosenMove,currentPlayer,diceValues);
+            } else {
+                System.out.println(
+                        "Enter your move in the format 'start to end' (e.g., '5 to 12') or type 'moves' for suggestions:");
+                String moveInput = getUserInput();
+
+                if (moveInput.equalsIgnoreCase("moves")) {
+                    printLegalMoves(legalMoves);
+                    continue;
+                }
+
+                MoveOption chosenMove = parseUserMoveInput(moveInput, legalMoves);
+                if (chosenMove == null) {
+                    System.out.println("Invalid move. Please try again.");
+                    continue;
+                }
+
+                // Execute the chosen move
+                playMove(chosenMove, currentPlayer, diceValues);
+            }
+
+            // Display the board after the move
+            board.display(currentPlayer);
+
+            // Recalculate legal moves with remaining dice
+            legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
+        }
+
+        currentPlayer = switchPlayer(currentPlayer, player1, player2);
+        board.display(currentPlayer);
     }
 
     private void determineMatchScore() {
@@ -256,23 +269,41 @@ public class Game {
         board.displayScore(currentPlayer, player1.getScore(), player2.getScore());
     }
 
+    // Process commands from a file
     private void processTestFile(String filename) {
-        while (true) {
-            try {
-                File myObj = new File(filename);
-                Scanner myReader = new Scanner(myObj);
-
-                while (myReader.hasNextLine()) {
-                    String command = myReader.nextLine().trim();
-                    processUserCommand(command);
-                }
-                myReader.close();
-                break;
-            } catch (FileNotFoundException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
-            }
+        if (filename == null || filename.isEmpty()) {
+            System.out.println("Invalid filename provided. Please provide a valid file.");
+            return;
         }
+
+        try(Scanner fileReader = new Scanner(new File(filename))) {
+            System.out.println("Loading test commands from: " + filename);
+            while (fileReader.hasNextLine()) {
+                commandQueue.add(fileReader.nextLine().trim());
+            }
+            testMode = true;
+            System.out.println("Successfully loaded commands. Entering test mode.");
+        } catch (FileNotFoundException e) {
+            System.out.println("File: " + filename + " not found.");
+            return;
+        }
+        processTestCommands();  // Process all commands in test mode
+    }
+
+    private void processTestCommands() {
+        while (testMode ? !commandQueue.isEmpty() : stillPlaying) {
+            String command =  commandQueue.remove(0);
+            processUserCommand(command);
+        }
+
+        if (testMode && commandQueue.isEmpty()) {
+            System.out.println("No more commands available. Exiting.");
+            testMode = false;
+        }
+    }
+
+    private String getUserInput() {
+        return new Scanner(System.in).nextLine().trim();
     }
 
     /**
@@ -344,11 +375,6 @@ public class Game {
             int dispEnd = displayedIndex(currentPlayer, move.getEndPos());
             System.out.println((i + 1) + ". " + dispStart + " to " + dispEnd + " using " + move.getDiceUsed());
         }
-    }
-
-    public void printEndOfGameScore() {
-        System.out.println(player1.getName() + " score: " + player1.getScore());
-        System.out.println(player2.getName() + " score: " + player2.getScore());
     }
 
     public boolean isGameOver() {
