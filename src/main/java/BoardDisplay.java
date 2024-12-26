@@ -6,24 +6,77 @@ import java.util.*;
  */
 public class BoardDisplay {
     private final Board board;
+    private int countXOnBar = 0;
+    private int countOOnBar = 0;
 
     public BoardDisplay(Board board) {
         this.board = board;
     }
 
+    private PipCalculator getPipCalculator() {
+        return  new PipCalculator(board.getBoardState()); // Always operate on the latest board state
+    }
 
+    // Display pip numbers for the top row
+    public void displayTopPipNumbers(Player player) {
+        getPipCalculator().displayTopPipNumbers(player);
+    }
+
+    // Display pip numbers for the bottom row
+    public void displayBottomPipNumbers(Player player) {
+        getPipCalculator().displayBottomPipNumbers(player);
+    }
+
+
+    // Find maximum number of rows for checkers at any point
+    public int findCurrentMaxRows() {
+        int maxRows = 0;
+        for (ArrayList<Checker> point : board.getBoardState().values()) {
+            if (point.size() > maxRows) {
+                maxRows = point.size();
+            }
+        }
+        return maxRows;
+    }
+
+    public void printChecker(ArrayList<Checker> point, int row) {
+        if (row < point.size()) {
+            Checker checker = point.get(row);
+            if (checker != null) {
+                System.out.print(checker.getPlayer() + "   ");
+            }
+        } else {
+            System.out.print("|   ");
+        }
+    }
+
+    // Print checkers on the bar
+    public void printCheckerOnBar() {
+        List<Checker> barX = board.getBar("X");
+        List<Checker> barO = board.getBar("O");
+        if (!barX.isEmpty() && barX.size() > countXOnBar) {
+            System.out.print(barX.get(countXOnBar).getSymbol() + "     ");
+            countXOnBar++;
+        } else if (!barO.isEmpty() && barO.size() > countOOnBar) {
+            System.out.print(barO.get(countOOnBar).getSymbol() + "     ");
+            countOOnBar++;
+        } else {
+            System.out.print("BAR   ");
+        }
+    }
+
+    // Main display method
     public void display(Player player) {
+         countXOnBar = 0;
+         countOOnBar = 0;
 
-       // countXOnBar = 0;
-      //  countOOnBar = 0;
+        // Display pip numbers for the top row
+        displayTopPipNumbers(player);
+        int maxRowsNew = findCurrentMaxRows();
 
-        displayPipCounts(player, true); // Bottom pip numbers (13-24)
-
-        int maxRowsNew = findCurrentMaxRows(); // Find max rows in board
-
-        // Display the upper part of the board (points 12 to 23)
-        for (int row = 0; row <= maxRowsNew-1; row++) {
-            System.out.print(" "); // Just for alignment
+        // Display upper part of the board (points 13 to 24)
+        for (int row = 0; row <= maxRowsNew - 1; row++) {
+            System.out.print(" ");
             for (int pointIndex = 13; pointIndex <= 18; pointIndex++) {
                 printChecker(board.getCheckersAt(pointIndex), row);
             }
@@ -36,7 +89,7 @@ public class BoardDisplay {
 
         System.out.println();
 
-        // Display the lower part of the board (points 0 to 11 in reverse order)
+        // Display lower part of the board (points 12 to 1, reverse order)
         for (int row = maxRowsNew - 1; row >= 0; row--) {
             System.out.print(" ");
             for (int pointIndex = 12; pointIndex >= 7; pointIndex--) {
@@ -49,62 +102,15 @@ public class BoardDisplay {
             System.out.println();
         }
 
+        // Display pip numbers for the bottom row
+        displayBottomPipNumbers(player);
+        System.out.println("\n");
 
-        displayPipCounts(player, false); // Bottom pip numbers (13-24)
-        System.out.println("\n"); // New line after full board
-    }
-
-    public void printCheckerOnBar() {
-      /*  String symbol = player.getSymbol();
-        List<Checker> barCheckers = board.getBar(symbol);
-        if(!bar.get("X").isEmpty() && bar.get("X").size() > countXOnBar) {
-            countXOnBar += 1;
-            System.out.print(bar.get("X").getFirst().getSymbol() + "     ");
-        } else if (!bar.get("O").isEmpty() && bar.get("O").size() > countOOnBar) {
-            countOOnBar += 1;
-            System.out.print(bar.get("O").getFirst().getSymbol() + "     ");
-        }
-        else {
-            System.out.print("BAR   ");
-        }*/
-    }
-
-    public void printChecker(ArrayList<Checker> point, int row) {
-        if (row < point.size()) {
-            Checker checker = point.get(row);
-            if (checker != null) {
-                System.out.print(checker.getPlayer() + "   ");
-            }
-        } else {
-            System.out.print("|   "); // Empty spot if row exceeds the number of checkers at this point
-        }
-    }
-
-    // To find maximum number of checkers currently in a point to know the number of rows needed
-    public int findCurrentMaxRows() {
-        int maxRows = 0;
-        for (ArrayList<Checker> point : board.getBoardState().values()) {
-            if (point != null && point.size() > maxRows) {
-                maxRows = point.size();
-            }
-        }
-        return maxRows;
+        // Display bear-off counts
+        System.out.println("Player X bear-off count: " + board.getBearOffCount("X"));
+        System.out.println("Player O bear-off count: " + board.getBearOffCount("O"));
     }
 
 
-    private void displayPipCounts(Player player, boolean isTop) {
-        PipCalculator pipCalculator = new PipCalculator(board.getBoardState());
-        if (isTop) {
-            pipCalculator.displayTopPipNumbers(player);
-        } else {
-            pipCalculator.displayBottomPipNumbers(player);
-        }
-    }
-
-    public void displayTotalPipCounts(Player playerX, Player player0) {
-        PipCalculator pipCalculator = new PipCalculator(board.getBoardState());
-        pipCalculator.displayTotalPipCounts(playerX, player0);
-
-    }
 
 }

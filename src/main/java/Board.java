@@ -15,6 +15,7 @@ public class Board {
     private int countXOnBar = 0;
     private int countOOnBar = 0;
     private Constants c;
+    private BoardDisplay boardDisplay;
     // NOTE ENCAPSULATE BAR AND BEAROFF INTO OWN CLASS
 
     /**
@@ -23,10 +24,11 @@ public class Board {
 
     public Board() {
         board = new HashMap<>();
+        pipCalculator = new PipCalculator(board);
+        boardDisplay = new BoardDisplay(this);
         bar = new Bar();
         bearOffArea = new BearOffArea();
         bearOff = new HashMap<>();
-        pipCalculator = new PipCalculator(board);
         c = new Constants();
         initialize();
     }
@@ -38,6 +40,7 @@ public class Board {
         }
         bearOff.put(c.X, 0);
         bearOff.put(c.O, 0);
+        //setupTestBearOffBoard();
         setupInitialBoard();
     }
 
@@ -74,6 +77,17 @@ public class Board {
              addChecker(8, new Checker(c.X, 8));
              addChecker(17, new Checker(c.O, 17));
          }
+    }
+
+    private void setupTestBearOffBoard() {
+        for(int i = 0; i < 5; i++) {
+            addChecker(24, new Checker(c.O, 24));
+            addChecker(1, new Checker(c.X, 1));
+            addChecker(23, new Checker(c.O, 23));
+            addChecker(2, new Checker(c.X, 2));
+            addChecker(21, new Checker(c.O, 21));
+            addChecker(4, new Checker(c.X, 4));
+        }
     }
 
 
@@ -171,6 +185,16 @@ public class Board {
         System.out.println("Moved checker from bar " + " to " + (end));
     }
 
+//    public boolean isBearOffMove(int end, Player player) {
+//        if (player.getSymbol().equals("X") && end >= 1 && end <= 6) {
+//            return canWeBearOff(player);
+//        } else if (player.getSymbol().equals("O") && end >= 19 && end <= 24) {
+//            return canWeBearOff(player);
+//        }
+//        return false;
+//    }
+
+
     public void executeMove(int start, int end, Player player) {
         List<Checker> barX = bar.getCheckers(c.X);
         List<Checker> barO = bar.getCheckers(c.O);
@@ -187,6 +211,14 @@ public class Board {
                 System.out.println("No checkers on the bar to move");
                 return;
             }
+        }
+
+        if(end == 25) {
+            if(!board.get(start).isEmpty()) {
+                Checker checker = board.get(start).remove(0);
+                bearOffChecker(player.getSymbol());
+            }
+
         }
 
         // Hitting opponent's checker
@@ -421,49 +453,51 @@ public class Board {
     }
 
     public void display(Player player) {
-        countXOnBar = 0;
-        countOOnBar = 0;
-
-        // Display pip numbers for the top row
-        pipCalculator.displayTopPipNumbers(player);
-        int maxRowsNew = findCurrentMaxRows();
-
-        // Display upper part of the board (points 13 to 24)
-        for (int row = 0; row <= maxRowsNew - 1; row++) {
-            System.out.print(" ");
-            for (int pointIndex = 13; pointIndex <= 18; pointIndex++) {
-                printChecker(board.get(pointIndex), row);
-            }
-            printCheckerOnBar();
-            for (int pointIndex = 19; pointIndex <= 24; pointIndex++) {
-                printChecker(board.get(pointIndex), row);
-            }
-            System.out.println();
-        }
-
-        System.out.println();
-
-        // Display lower part of the board (points 12 to 1, reverse order)
-        for (int row = maxRowsNew - 1; row >= 0; row--) {
-            System.out.print(" ");
-            for (int pointIndex = 12; pointIndex >= 7; pointIndex--) {
-                printChecker(board.get(pointIndex), row);
-            }
-            printCheckerOnBar();
-            for (int pointIndex = 6; pointIndex >= 1; pointIndex--) {
-                printChecker(board.get(pointIndex), row);
-            }
-            System.out.println();
-        }
-
-        // Display pip numbers for the bottom row
-        pipCalculator.displayBottomPipNumbers(player);
-        System.out.println("\n");
-
-
-        // Display bear-off counts
-        System.out.println("Player X bear-off count: " + getBearOffCount(c.X));
-        System.out.println("Player O bear-off count: " + getBearOffCount(c.O));
+//        countXOnBar = 0;
+//        countOOnBar = 0;
+//
+//        // Display pip numbers for the top row
+//        pipCalculator.displayTopPipNumbers(player);
+//        int maxRowsNew = findCurrentMaxRows();
+//
+//        // Display upper part of the board (points 13 to 24)
+//        for (int row = 0; row <= maxRowsNew - 1; row++) {
+//            System.out.print(" ");
+//            for (int pointIndex = 13; pointIndex <= 18; pointIndex++) {
+//                printChecker(board.get(pointIndex), row);
+//            }
+//            printCheckerOnBar();
+//            for (int pointIndex = 19; pointIndex <= 24; pointIndex++) {
+//                printChecker(board.get(pointIndex), row);
+//            }
+//            System.out.println();
+//        }
+//
+//        System.out.println();
+//
+//        // Display lower part of the board (points 12 to 1, reverse order)
+//        for (int row = maxRowsNew - 1; row >= 0; row--) {
+//            System.out.print(" ");
+//            for (int pointIndex = 12; pointIndex >= 7; pointIndex--) {
+//                printChecker(board.get(pointIndex), row);
+//            }
+//            printCheckerOnBar();
+//            for (int pointIndex = 6; pointIndex >= 1; pointIndex--) {
+//                printChecker(board.get(pointIndex), row);
+//            }
+//            System.out.println();
+//        }
+//
+//        // Display pip numbers for the bottom row
+//        pipCalculator.displayBottomPipNumbers(player);
+//        System.out.println("\n");
+//
+//
+//        // Display bear-off counts
+//        System.out.println("Player X bear-off count: " + getBearOffCount(c.X));
+//        System.out.println("Player O bear-off count: " + getBearOffCount(c.O));
+//
+boardDisplay.display(player);
     }
 
     public void displayTotalPipCounts(Player playerX, Player player0) {
