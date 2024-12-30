@@ -17,6 +17,12 @@ public class BoardDisplay {
         return  new PipCalculator(board.getBoardState()); // Always operate on the latest board state
     }
 
+    public static void displayMatchScore(Player player1, Player player2, int matchLength) {
+        System.out.printf("Match Score: %s (%d points) vs %s (%d points) | First to %d points wins.\n",
+                player1.getName(), player1.getScore(), player2.getName(), player2.getScore(), matchLength);
+    }
+
+
     // Display pip numbers for the top row
     public void displayTopPipNumbers(Player player) {
         getPipCalculator().displayTopPipNumbers(player);

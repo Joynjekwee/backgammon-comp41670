@@ -40,9 +40,17 @@ public class Board {
         }
         bearOff.put(c.X, 0);
         bearOff.put(c.O, 0);
-        //setupTestBearOffBoard();
-        setupInitialBoard();
+        setupTestBearOffBoard();
+       // setupInitialBoard();
     }
+
+    public void reset() {
+        // Clear the board and set up initial positions
+        board.clear();
+        setupInitialBoard();
+        System.out.println("Board reset for a new game.");
+    }
+
 
     /**
      * Adds a checker to a specific position on the board.
@@ -202,23 +210,25 @@ public class Board {
         ArrayList<Checker> endCheckers = board.get(end);
         ArrayList<Checker> startCheckers = (start == 0 || !board.containsKey(start)) ? null : board.get(start);
 
-        if (start == 0) {
-            try{
+        if (start == 0) { // Moving from the bar
+            try {
                 moveCheckerToBoard(player.getSymbol(), end);
                 return;
-            }
-            catch (IllegalStateException e) {
+            } catch (IllegalStateException e) {
                 System.out.println("No checkers on the bar to move");
                 return;
             }
         }
 
-        if(end == 25) {
-            if(!board.get(start).isEmpty()) {
+        if (end == 25) { // Handle bear-off
+            if (!board.get(start).isEmpty() && board.get(start).get(0).getSymbol().equals(player.getSymbol())) {
                 Checker checker = board.get(start).remove(0);
-                bearOffChecker(player.getSymbol());
+                bearOffChecker(player.getSymbol()); // Increment the bear-off count
+                System.out.println("Checker borne off from position " + start);
+            } else {
+                throw new IllegalStateException("No checkers at position ");
             }
-
+            return;
         }
 
         // Hitting opponent's checker
@@ -280,6 +290,23 @@ public class Board {
         for (Checker checker : getCurrentPlayerCheckers(player)) {
             moves.addAll(canWeMakeAMove(checker.getPosition(), diceValues, player));
         }
+
+        if (canWeBearOff(player)) { // Check if the player is eligible to bear off
+            int homeStart = player.getSymbol().equals("X") ? 1 : 19;
+            int homeEnd = player.getSymbol().equals("X") ? 6 : 24;
+
+            for (Checker checker : getCurrentPlayerCheckers(player)) {
+                int position = checker.getPosition();
+                if (position >= homeStart && position <= homeEnd) {
+                    for (int die : diceValues) {
+                        if (position - die < homeStart || position + die > homeEnd) { // Bear-off condition
+                            moves.add(new MoveOption(position, 25, List.of(die))); // Use 25 as the special endPos for bear-off
+                        }
+                    }
+                }
+            }
+        }
+
         return new ArrayList<>(moves);
     }
 

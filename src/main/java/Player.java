@@ -1,7 +1,7 @@
 public class Player{
 
     private String name;
-    private int score;
+    private int score; //FOR MATCHES
     private String symbol;
     private boolean canDouble = false;
 
