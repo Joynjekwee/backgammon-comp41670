@@ -25,7 +25,6 @@ public class Game {
     private boolean doublingOffered = false;
     private int currentStake = 1;
 
-
     /**
      * Creates a new Game instance with the specified players
      * 
@@ -50,7 +49,6 @@ public class Game {
                 + "Player 2: " + player2.getName() + " (" + player2.getSymbol() + ")" + "\n");
         System.out.println();
     }
-
 
     /**
      * Determines which player goes first by rolling a single die for each player.
@@ -103,7 +101,8 @@ public class Game {
 
     private void switchPlayer() {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
-        System.out.println("The Current Player is: " + currentPlayer.getName() + " (" + currentPlayer.getSymbol() + ")");
+        System.out
+                .println("The Current Player is: " + currentPlayer.getName() + " (" + currentPlayer.getSymbol() + ")");
     }
 
     public void playGame() {
@@ -115,7 +114,6 @@ public class Game {
             System.out.println("Current Player: " + currentPlayer.getName() + " (" + currentPlayer.getSymbol() + ")");
             System.out.print("User Input: ");
             String userInput = getUserInput();
-
 
             processUserCommand(userInput);
 
@@ -186,22 +184,21 @@ public class Game {
                 break;
 
             case "double":
-                //doubleCommand();
+                // doubleCommand();
                 break;
 
             case "accept":
-             //   handleAcceptDouble();
+                // handleAcceptDouble();
                 break;
 
             case "refuse":
-              //  handleRefuseDouble();
+                // handleRefuseDouble();
                 break;
 
             case "quit":
                 System.out.println("Quitting Game Now:");
                 stillPlaying = false;
                 break;
-
 
             default:
                 System.out.println("Invalid input, please type commands available.");
@@ -307,7 +304,6 @@ public class Game {
         System.out.println("Roll Result: " + dieResults);
         diceValues = new ArrayList<>(dice.getMoves());
 
-
         // Get legal moves from the board
         List<MoveOption> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
 
@@ -330,11 +326,8 @@ public class Game {
             System.out.println("Select your move by entering the corresponding letter (e.g., A, B, C):");
             printLegalMovesWithCodes(legalMoves);
 
-
             String userChoice = getUserInput().trim().toUpperCase();
             MoveOption chosenMove = parseUserMoveByCode(userChoice, legalMoves);
-
-            
 
             if (chosenMove == null) {
                 System.out.println("Invalid selection. Please try again.");
@@ -414,7 +407,7 @@ public class Game {
     }
 
     private String getUserInput() {
-        if(testMode && !commandQueue.isEmpty()) {
+        if (testMode && !commandQueue.isEmpty()) {
             String testInput = commandQueue.remove(0);
             return testInput;
         }
@@ -511,13 +504,12 @@ public class Game {
     private void doubleCommand() {
 
         Player opponent = currentPlayer == player1 ? player2 : player1;
-        if(currentPlayer.canDouble()) {
+        if (currentPlayer.canDouble()) {
             doublingOffered = true;
             doublingPlayer = currentPlayer;
 
-            System.out.println("Player" + currentPlayer.getName() + "offers to double the stakes." );
+            System.out.println("Player" + currentPlayer.getName() + "offers to double the stakes.");
             System.out.println("Enter 'accept' to double stakes or 'refuse' to end game");
-
 
         } else {
             System.out.println("You cannot double at this time.");
@@ -539,7 +531,7 @@ public class Game {
     }
 
     private void handleRefuseDouble() {
-        if(!doublingOffered) {
+        if (!doublingOffered) {
             System.out.println("No doubling offer to refuse");
             return;
         }
@@ -551,6 +543,5 @@ public class Game {
         doublingPlayer.addScore(currentStake);
         stillPlaying = false; // End the game
     }
-
 
 }

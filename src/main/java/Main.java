@@ -4,36 +4,48 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
+        boolean playAgain = true;
         System.out.println("Welcome to Backgammon");
         System.out.println();
 
-        System.out.print("User Name player 1: ");
-        String userName1 = in.nextLine();
-        System.out.print("User Name player 2: ");
-        String userName2 = in.nextLine();
+        while (playAgain) {
+            // Get player names
+            System.out.print("Enter name for Player 1: ");
+            String playerName1 = in.nextLine();
+            System.out.print("Enter name for Player 2: ");
+            String playerName2 = in.nextLine();
 
-        String player1Symbol = "X";
-        String player2Symbol = "O";
+            String player1Symbol = "X";
+            String player2Symbol = "O";
 
-        // match length
-        int matchLength = 0;
-        while (matchLength <= 0) {
-            try {
-                System.out.print("Enter match length (points to win): ");
-                matchLength = Integer.parseInt(in.nextLine().trim());
-                if (matchLength <= 0) {
-                    System.out.println("Match length must be positive. Enter the correct length!");
+            // Get match length
+            int matchLength = 0;
+            while (matchLength <= 0) {
+                try {
+                    System.out.print("Enter match length (points to win): ");
+                    matchLength = Integer.parseInt(in.nextLine().trim());
+                    if (matchLength <= 0) {
+                        System.out.println("Match length must be positive. Enter the correct length!");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a valid number!");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid number!");
             }
+
+            // Create a new game
+            Player p1 = new Player(playerName1, player1Symbol);
+            Player p2 = new Player(playerName2, player2Symbol);
+            Game game = new Game(p1, p2, matchLength);
+            game.printCommands();
+            game.playGame();
+
+            // Ask if the players want to start a new match
+            System.out.print("Do you want to start a new match? (yes/no): ");
+            String response = in.nextLine();
+            playAgain = response.equalsIgnoreCase("yes");
         }
 
-        Player p1 = new Player(userName1, player1Symbol);
-        Player p2 = new Player(userName2, player2Symbol);
-        Game game = new Game(p1, p2, matchLength);
-        game.printCommands();
-        game.playGame();
+        System.out.println("Thank you for playing!");
 
     }
 }
