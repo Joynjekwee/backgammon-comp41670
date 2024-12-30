@@ -23,6 +23,7 @@ This is a **Backgammon game implementation** written in Java. The project uses *
 Maven
 
 ### Project Structure
+
 backgammon-project/
 │
 ├── pom.xml               # Maven configuration file
@@ -61,27 +62,3 @@ Checkers can be moved onto the board, to the bar, or borne off.
 3. Winning:
 The first player to bear off all their checkers wins the game.
 
-### **7. Troubleshooting for Teammates**
-1. **If Maven Dependencies Fail to Resolve**:
-    - Run:
-      ```bash
-      mvn clean install
-      ```
-    - Or reload Maven projects in IntelliJ.
-
-2. **If Java Version Mismatch Occurs**:
-    - Ensure teammates install the correct Java version (Java 23 in your case).
-
-3. **If IDE Issues Persist**:
-    - Encourage them to delete `.idea/` and `.iml` files, then reopen the project.
-
----
-
-### **8. Summary**
-For your teammates to pull and run your project:
-- They pull the `main` branch from GitHub.
-- They ensure their environment (Java version) matches yours.
-- Maven handles all dependencies and builds the project for them.
-- A clear `README.md` helps guide them through the setup.
-
-If you follow these steps, your project will be easy for teammates and your lecturer to use. Let me know if you’d like help refining your `README.md` or automating any steps further!

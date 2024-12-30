@@ -3,6 +3,7 @@ public class Player{
     private String name;
     private int score;
     private String symbol;
+    private boolean canDouble = false;
 
     public Player(String name, String symbol) {
         this.name = name;
@@ -19,4 +20,10 @@ public class Player{
     public void addScore(int increment) {
         this.score += increment;//
     }
+
+    public boolean canDouble(){return canDouble;}
+
+    public void setCanDouble(){canDouble = true;}
+
+    public  void resetCanDouble(){canDouble = false;}
 }
