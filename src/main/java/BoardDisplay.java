@@ -115,4 +115,13 @@ public class BoardDisplay {
         System.out.println("Player O bear-off count: " + board.getBearOffCount("O"));
     }
 
+
+    public void displayDoublingStatus(DoublingCube doublingCube) {
+        System.out.println("Current Stake: " + doublingCube.getStake());
+        if (doublingCube.isDoublingOffered()) {
+            System.out.println("Doubling offered by: " + doublingCube.getOwner().getName());
+        } else {
+            System.out.println("Doubling Cube is owned by: " + (doublingCube.getOwner() != null ? doublingCube.getOwner().getName() : "None"));
+        }
+    }
 }

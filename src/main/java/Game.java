@@ -13,7 +13,7 @@ public class Game {
 
     private final int matchLength;
     private final Player player1, player2;
-    private Player currentPlayer;
+    private Player currentPlayer, doublingPlayer;
     private final Board board;
     private Dice dice = new Dice();
     private ArrayList<Integer> diceValues = new ArrayList<>();
@@ -22,6 +22,9 @@ public class Game {
     private Constants constants;
     private List<String> commandQueue = new ArrayList<>();
     private boolean testMode = false;
+    private boolean doublingOffered = false;
+    private int currentStake = 1;
+
 
     /**
      * Creates a new Game instance with the specified players
@@ -48,11 +51,6 @@ public class Game {
         System.out.println();
     }
 
-    private void switchPlayer() {
-        currentPlayer = (currentPlayer == player1) ? player2 : player1;
-        System.out
-                .println("The Current Player is: " + currentPlayer.getName() + " (" + currentPlayer.getSymbol() + ")");
-    }
 
     /**
      * Determines which player goes first by rolling a single die for each player.
@@ -103,6 +101,11 @@ public class Game {
         System.out.println();
     }
 
+    private void switchPlayer() {
+        currentPlayer = (currentPlayer == player1) ? player2 : player1;
+        System.out.println("The Current Player is: " + currentPlayer.getName() + " (" + currentPlayer.getSymbol() + ")");
+    }
+
     public void playGame() {
         currentPlayer = whoGoesFirst();
         start();
@@ -113,11 +116,6 @@ public class Game {
             System.out.print("User Input: ");
             String userInput = getUserInput();
 
-            if (userInput.equalsIgnoreCase("quit")) {
-                System.out.println("Quitting Game Now:");
-                stillPlaying = false;
-                break;
-            }
 
             processUserCommand(userInput);
 
@@ -186,6 +184,24 @@ public class Game {
             case "ending":
                 // simulateGameEnding(); // Call the new test mode method
                 break;
+
+            case "double":
+                //doubleCommand();
+                break;
+
+            case "accept":
+             //   handleAcceptDouble();
+                break;
+
+            case "refuse":
+              //  handleRefuseDouble();
+                break;
+
+            case "quit":
+                System.out.println("Quitting Game Now:");
+                stillPlaying = false;
+                break;
+
 
             default:
                 System.out.println("Invalid input, please type commands available.");
@@ -286,16 +302,11 @@ public class Game {
     }
 
     private void handleRoll() {
-        // For testing specific dice rolls
-        // dice.enableManualMode();
-        // dice.setManualDice(Arrays.asList(3, 3)); // Set dice to doubles [1, 8]
         dice.roll(); // This will use the manual dice values
-        // dice.disableManualMode();
-        // dice.roll();
         String dieResults = dice.getDiceResults();
         System.out.println("Roll Result: " + dieResults);
         diceValues = new ArrayList<>(dice.getMoves());
-        // diceValues = dice.getMoves();
+
 
         // Get legal moves from the board
         List<MoveOption> legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
@@ -319,8 +330,11 @@ public class Game {
             System.out.println("Select your move by entering the corresponding letter (e.g., A, B, C):");
             printLegalMovesWithCodes(legalMoves);
 
-            String userInput = getUserInput().trim().toUpperCase();
-            MoveOption chosenMove = parseUserMoveByCode(userInput, legalMoves);
+
+            String userChoice = getUserInput().trim().toUpperCase();
+            MoveOption chosenMove = parseUserMoveByCode(userChoice, legalMoves);
+
+            
 
             if (chosenMove == null) {
                 System.out.println("Invalid selection. Please try again.");
@@ -383,27 +397,27 @@ public class Game {
                 commandQueue.add(fileReader.nextLine().trim());
             }
             testMode = true;
-            System.out.println("Successfully loaded commands. Entering test mode.");
+            processTestCommands(); // Process all commands in test mode
         } catch (FileNotFoundException e) {
             System.out.println("File: " + filename + " not found.");
-            return;
         }
-        processTestCommands(); // Process all commands in test mode
+
     }
 
     private void processTestCommands() {
-        while (testMode ? !commandQueue.isEmpty() : stillPlaying) {
-            String command = commandQueue.remove(0);
+        while (!commandQueue.isEmpty()) {
+            String command = commandQueue.remove(0); // Fetch next command
+            System.out.println("Processing command: " + command); // Debugging output
             processUserCommand(command);
         }
-
-        if (testMode && commandQueue.isEmpty()) {
-            System.out.println("No more commands available. Exiting.");
-            testMode = false;
-        }
+        testMode = false; // Disable test mode after processing
     }
 
     private String getUserInput() {
+        if(testMode && !commandQueue.isEmpty()) {
+            String testInput = commandQueue.remove(0);
+            return testInput;
+        }
         return new Scanner(System.in).nextLine().trim();
     }
 
@@ -494,18 +508,49 @@ public class Game {
         return false;
     }
 
-    // public static Player switchPlayer(Player currentPlayer, Player player1,
-    // Player player2) {
-    // // If current player is player1, switch to player2, otherwise switch to
-    // player1
-    // if (currentPlayer == player1) {
-    // System.out.println("The Current Player is Player: " + player2.getName() + "
-    // (" + player2.getSymbol() + ")");
-    // return player2;
-    // } else {
-    // System.out.println("The Current Player is Player: " + player1.getName() + "
-    // (" + player1.getSymbol() + ")");
-    // return player1;
-    // }
-    // }
+    private void doubleCommand() {
+
+        Player opponent = currentPlayer == player1 ? player2 : player1;
+        if(currentPlayer.canDouble()) {
+            doublingOffered = true;
+            doublingPlayer = currentPlayer;
+
+            System.out.println("Player" + currentPlayer.getName() + "offers to double the stakes." );
+            System.out.println("Enter 'accept' to double stakes or 'refuse' to end game");
+
+
+        } else {
+            System.out.println("You cannot double at this time.");
+        }
+    }
+
+    private void handleAcceptDouble() {
+        if (!doublingOffered) {
+            System.out.println("No doubling offer to accept.");
+            return;
+        }
+
+        Player opponent = doublingPlayer == player1 ? player2 : player1;
+        System.out.println("Player " + opponent.getName() + " accepts the double. Stakes are now doubled!");
+        currentStake *= 2; // Double the stakes
+        doublingOffered = false;
+        doublingPlayer = null; // Reset doubling state
+
+    }
+
+    private void handleRefuseDouble() {
+        if(!doublingOffered) {
+            System.out.println("No doubling offer to refuse");
+            return;
+        }
+
+        Player opponent = doublingPlayer == player1 ? player2 : player1;
+
+        System.out.println("Player " + opponent.getName() + " refuses to double the stakes." + currentPlayer.getName() +
+                "wins the current stake of" + currentStake + "!");
+        doublingPlayer.addScore(currentStake);
+        stillPlaying = false; // End the game
+    }
+
+
 }
