@@ -14,7 +14,12 @@ public class BoardDisplay {
     }
 
     private PipCalculator getPipCalculator() {
-        return  new PipCalculator(board.getBoardState()); // Always operate on the latest board state
+        return new PipCalculator(board.getBoardState()); // Always operate on the latest board state
+    }
+
+    public static void displayMatchScore(Player player1, Player player2, int matchLength) {
+        System.out.printf("Match Score: %s (%d points) vs %s (%d points) | First to %d points wins.\n",
+                player1.getName(), player1.getScore(), player2.getName(), player2.getScore(), matchLength);
     }
 
     // Display pip numbers for the top row
@@ -26,7 +31,6 @@ public class BoardDisplay {
     public void displayBottomPipNumbers(Player player) {
         getPipCalculator().displayBottomPipNumbers(player);
     }
-
 
     // Find maximum number of rows for checkers at any point
     public int findCurrentMaxRows() {
@@ -67,8 +71,8 @@ public class BoardDisplay {
 
     // Main display method
     public void display(Player player) {
-         countXOnBar = 0;
-         countOOnBar = 0;
+        countXOnBar = 0;
+        countOOnBar = 0;
 
         // Display pip numbers for the top row
         displayTopPipNumbers(player);
@@ -110,7 +114,5 @@ public class BoardDisplay {
         System.out.println("Player X bear-off count: " + board.getBearOffCount("X"));
         System.out.println("Player O bear-off count: " + board.getBearOffCount("O"));
     }
-
-
 
 }
