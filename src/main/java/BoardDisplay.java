@@ -108,20 +108,16 @@ public class BoardDisplay {
 
         // Display pip numbers for the bottom row
         displayBottomPipNumbers(player);
-        System.out.println("\n");
-
+        System.out.println();
         // Display bear-off counts
-        System.out.println("Player X bear-off count: " + board.getBearOffCount("X"));
-        System.out.println("Player O bear-off count: " + board.getBearOffCount("O"));
+        System.out.println("Player X bear-off count: " + board.getBearOffCount("X") + "\t\t\t" + "Player O bear-off count: " + board.getBearOffCount("O"));
     }
 
 
     public void displayDoublingStatus(DoublingCube doublingCube) {
-        System.out.println("Current Stake: " + doublingCube.getStake());
-        if (doublingCube.isDoublingOffered()) {
-            System.out.println("Doubling offered by: " + doublingCube.getOwner().getName());
-        } else {
-            System.out.println("Doubling Cube is owned by: " + (doublingCube.getOwner() != null ? doublingCube.getOwner().getName() : "None"));
-        }
+        System.out.println("Doubling Cube: " + (doublingCube.getOwner() != null ? doublingCube.getOwner().getName() : "No owner")
+                + " [Stake: " + doublingCube.getStake() + "]");
+        System.out.println();
     }
+
 }

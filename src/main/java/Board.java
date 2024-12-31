@@ -112,7 +112,7 @@ public class Board {
     public void bearOffChecker(String symbol) {
         // Increment bear-off count using BearOffArea
         bearOffArea.addChecker(symbol);
-        System.out.println("Checker borne off for player: " + symbol);
+
     }
 
     public int getBearOffCount(String symbol) {
@@ -210,7 +210,7 @@ public class Board {
             if (!board.get(start).isEmpty() && board.get(start).get(0).getSymbol().equals(player.getSymbol())) {
                 Checker checker = board.get(start).remove(0);
                 bearOffChecker(player.getSymbol()); // Increment the bear-off count
-                System.out.println("Checker borne off from position " + start);
+
             } else {
                 throw new IllegalStateException("No checkers at position ");
             }
@@ -431,6 +431,8 @@ public class Board {
     public void display(Player player) {
         boardDisplay.display(player);
     }
+
+    public void displayDoublingCube(DoublingCube doublingCube) {boardDisplay.displayDoublingStatus(doublingCube);}
 
     public void displayTotalPipCounts(Player playerX, Player player0) {
         pipCalculator.displayTotalPipCounts(playerX, player0);

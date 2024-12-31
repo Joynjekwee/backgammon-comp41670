@@ -16,6 +16,7 @@ public class Game {
     private Player currentPlayer, doublingPlayer;
     private final Board board;
     private Dice dice = new Dice();
+    private DoublingCube doublingCube = new DoublingCube();
     private ArrayList<Integer> diceValues = new ArrayList<>();
     private String winner;
     private boolean stillPlaying = true;
@@ -43,12 +44,13 @@ public class Game {
     /**
      * Starts the game, displaying player details and initializing gameplay.
      */
-    public void start() {
+    public void displayPlayers() {
         System.out.println();
         System.out.print("Player 1: " + player1.getName() + " (" + player1.getSymbol() + ")" + "\t\t\t\t"
                 + "Player 2: " + player2.getName() + " (" + player2.getSymbol() + ")" + "\n");
         System.out.println();
     }
+
 
     /**
      * Determines which player goes first by rolling a single die for each player.
@@ -69,10 +71,12 @@ public class Game {
                 if (player1rolled > player2rolled) {
                     System.out.println(player1.getName() + " goes first");
                     System.out.println();
+                    printFormat();
                     return player1;
                 } else {
                     System.out.println(player2.getName() + " goes first");
                     System.out.println();
+                    printFormat();
                     return player2;
                 }
             }
@@ -85,8 +89,11 @@ public class Game {
      * Displays a list of available user commands.
      */
 
+    public void printFormat() {
+        System.out.println("=============================================================");
+    }
     public void printCommands() {
-        System.out.println("=========================================================");
+        printFormat();
         System.out.println("Possible commands to input");
         System.out.println("1.Roll");
         System.out.println("2.Double");
@@ -95,25 +102,26 @@ public class Game {
         System.out.println("5.Test");
         System.out.println("6.Quit");
         System.out.println("7.Dice");
-        System.out.println("=========================================================");
+        printFormat();
         System.out.println();
     }
 
     private void switchPlayer() {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
-        System.out
-                .println("The Current Player is: " + currentPlayer.getName() + " (" + currentPlayer.getSymbol() + ")");
     }
 
     public void playGame() {
         currentPlayer = whoGoesFirst();
-        start();
+        displayPlayers();
         board.display(currentPlayer);
+        board.displayDoublingCube(doublingCube);
 
         while (stillPlaying) {
+            printFormat();
             System.out.println("Current Player: " + currentPlayer.getName() + " (" + currentPlayer.getSymbol() + ")");
             System.out.print("User Input: ");
             String userInput = getUserInput();
+            System.out.println();
 
             processUserCommand(userInput);
 
@@ -141,7 +149,9 @@ public class Game {
                 System.out.println("Starting a new game...");
                 board.reset(); // Reset the board for the next game
                 currentPlayer = whoGoesFirst(); // Decide who starts the new game
+                displayPlayers();
                 board.display(currentPlayer);
+                board.displayDoublingCube(doublingCube);
             }
         }
     }
@@ -256,6 +266,7 @@ public class Game {
 
             // Display the board and handle moves
             board.display(currentPlayer);
+            board.displayDoublingCube(doublingCube);
 
             while (!diceValues.isEmpty()) {
                 if (legalMoves.isEmpty()) {
@@ -284,6 +295,7 @@ public class Game {
 
                 // Update the board and recalculate legal moves
                 board.display(currentPlayer);
+                board.displayDoublingCube(doublingCube);
                 legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
             }
         } catch (NumberFormatException e) {
@@ -309,6 +321,7 @@ public class Game {
 
         // Display the board before making moves
         board.display(currentPlayer);
+        board.displayDoublingCube(doublingCube);
 
         // Loop until all dice are used or no moves remain
         while (!diceValues.isEmpty()) {
@@ -322,7 +335,7 @@ public class Game {
                 playMove(legalMoves.get(0), currentPlayer, diceValues);
                 continue;
             }
-
+            System.out.println();
             System.out.println("Select your move by entering the corresponding letter (e.g., A, B, C):");
             printLegalMovesWithCodes(legalMoves);
 
@@ -338,6 +351,7 @@ public class Game {
 
             // Update the board and recalculate legal moves
             board.display(currentPlayer);
+            board.displayDoublingCube(doublingCube);
             legalMoves = board.getListOfLegalMoves(currentPlayer, diceValues);
         }
         if (diceValues.isEmpty()) {
@@ -474,6 +488,7 @@ public class Game {
                 : String.valueOf(displayedIndex(currentPlayer, chosenMove.getEndPos()));
         System.out.println("You selected: " + dispStart + " to " + dispEnd);
         System.out.println("Checker moved successfully.");
+        System.out.println();
     }
 
     /**
