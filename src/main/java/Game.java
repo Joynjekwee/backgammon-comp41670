@@ -20,6 +20,7 @@ public class Game {
     private ArrayList<Integer> diceValues = new ArrayList<>();
     private String winner;
     private boolean stillPlaying = true;
+    private boolean gameOver = false;
     private Constants constants;
     private List<String> commandQueue = new ArrayList<>();
     private boolean testMode = false;
@@ -111,48 +112,76 @@ public class Game {
     }
 
     public void playGame() {
-        currentPlayer = whoGoesFirst();
-        displayPlayers();
-        board.display(currentPlayer);
-        board.displayDoublingCube(doublingCube);
-
         while (stillPlaying) {
-            printFormat();
-            System.out.println("Current Player: " + currentPlayer.getName() + " (" + currentPlayer.getSymbol() + ")");
-            System.out.print("User Input: ");
-            String userInput = getUserInput();
-            System.out.println();
+            currentPlayer = whoGoesFirst();
+            displayPlayers();
+            board.display(currentPlayer);
+            board.displayDoublingCube(doublingCube);
 
-            processUserCommand(userInput);
+            while (!gameOver) {
+                printFormat();
+                System.out.println("Current Player: " + currentPlayer.getName() + " (" + currentPlayer.getSymbol() + ")");
+                System.out.print("User Input: ");
+                String userInput = getUserInput();
+                System.out.println();
 
-            // Check if the game is over
-            if (isGameOver()) {
-                System.out.printf("Game Over! %s wins this game.\n", winner);
+                processUserCommand(userInput);
 
-                // Calculate result type and update scores
-                determineResultType();
+                // Check if the game is over
+                if (isGameOver()) {
+                    System.out.printf("Game Over! %s wins this game.\n", winner);
 
-                // Check if the match is over
-                if (player1.getScore() >= matchLength) {
-                    System.out.printf("Match Over! %s wins the match with %d points!\n", player1.getName(),
-                            player1.getScore());
-                    stillPlaying = false;
-                    break;
-                } else if (player2.getScore() >= matchLength) {
-                    System.out.printf("Match Over! %s wins the match with %d points!\n", player2.getName(),
-                            player2.getScore());
-                    stillPlaying = false;
-                    break;
+                    // Calculate result type and update scores
+                    determineResultType();
+
+                    // Check if the match is over
+                    if (player1.getScore() >= matchLength) {
+                        System.out.printf("Match Over! %s wins the match with %d points!\n", player1.getName(),
+                                player1.getScore());
+                        stillPlaying = false;
+                        break;
+                    } else if (player2.getScore() >= matchLength) {
+                        System.out.printf("Match Over! %s wins the match with %d points!\n", player2.getName(),
+                                player2.getScore());
+                        stillPlaying = false;
+                        break;
+                    } else {
+                        // Start a new game
+                        System.out.println("Starting a new game...");
+                        doublingCube = new DoublingCube();
+                        board.reset(); // Reset the board for the next game
+                        currentPlayer = whoGoesFirst(); // Decide who starts the new game
+                        displayPlayers();
+                        board.display(currentPlayer);
+                        board.displayDoublingCube(doublingCube);
+                    }
                 }
-
-                // Start a new game
-                System.out.println("Starting a new game...");
-                board.reset(); // Reset the board for the next game
-                currentPlayer = whoGoesFirst(); // Decide who starts the new game
-                displayPlayers();
-                board.display(currentPlayer);
-                board.displayDoublingCube(doublingCube);
             }
+
+        }
+    }
+
+    private void determineMatchAndGameState() {
+        // Check if the match is over
+        if (player1.getScore() >= matchLength) {
+            System.out.printf("Match Over! %s wins the match with %d points!\n", player1.getName(),
+                    player1.getScore());
+            stillPlaying = false;
+            gameOver = true;
+        } else if (player2.getScore() >= matchLength) {
+            System.out.printf("Match Over! %s wins the match with %d points!\n", player2.getName(),
+                    player2.getScore());
+            stillPlaying = false;
+            gameOver = true;
+        } else {
+            // Start a new game
+            System.out.println("Starting a new game...");
+            doublingCube = new DoublingCube();
+            board.reset(); // Reset the board for the next game
+            currentPlayer = whoGoesFirst(); // Decide who starts the new game
+            displayPlayers();
+            board.display(currentPlayer);
+            board.displayDoublingCube(doublingCube);
         }
     }
 
@@ -194,20 +223,21 @@ public class Game {
                 break;
 
             case "double":
-                // doubleCommand();
+                doubleCommand();
                 break;
 
             case "accept":
-                // handleAcceptDouble();
+                handleAcceptDouble();
                 break;
 
             case "refuse":
-                // handleRefuseDouble();
+                handleRefuseDouble();
                 break;
 
             case "quit":
                 System.out.println("Quitting Game Now:");
                 stillPlaying = false;
+                gameOver = true;
                 break;
 
             default:
@@ -378,14 +408,14 @@ public class Game {
         if (loserBearOff == 0) {
             if (hasCheckerOnBar || hasCheckerInWinnerHome) {
                 System.out.println("The game ended in a Backgammon");
-                winnerPlayer.addScore(3);
+                winnerPlayer.addScore(3*doublingCube.getStake());
             } else {
                 System.out.println("The game ended in a Gammon"); //
-                winnerPlayer.addScore(2);
+                winnerPlayer.addScore(2*doublingCube.getStake());
             }
         } else {
             System.out.println("The game ended in a Single");
-            winnerPlayer.addScore(1);
+            winnerPlayer.addScore(1*doublingCube.getStake());
         }
 
         board.displayScore(currentPlayer, player1.getScore(), player2.getScore());
@@ -517,14 +547,27 @@ public class Game {
     }
 
     private void doubleCommand() {
-
         Player opponent = currentPlayer == player1 ? player2 : player1;
-        if (currentPlayer.canDouble()) {
-            doublingOffered = true;
-            doublingPlayer = currentPlayer;
 
-            System.out.println("Player" + currentPlayer.getName() + "offers to double the stakes.");
-            System.out.println("Enter 'accept' to double stakes or 'refuse' to end game");
+        if(doublingCube.getOwner() == null) {
+            doublingCube.offerDoubling(currentPlayer);
+        }
+
+        if(doublingCube.getOwner() != currentPlayer) {
+            System.out.println("You don't own the doubling cube and so cannot double at this time.");
+            return;
+        }
+        doublingCube.offerDoubling(currentPlayer);
+
+
+       // doublingCube.offerDoubling(currentPlayer);
+        if (doublingCube.getOwner() == currentPlayer && doublingCube.isDoublingOffered()) {
+            doublingPlayer = currentPlayer;
+            System.out.println("Player " + currentPlayer.getName() + " offers to double the stakes.");
+            System.out.println("Player " + opponent.getName() + ", enter 'accept' to double stakes or 'refuse' to end game");
+
+            String choice = getUserInput();
+            processUserCommand(choice);
 
         } else {
             System.out.println("You cannot double at this time.");
@@ -532,31 +575,22 @@ public class Game {
     }
 
     private void handleAcceptDouble() {
-        if (!doublingOffered) {
-            System.out.println("No doubling offer to accept.");
-            return;
-        }
-
         Player opponent = doublingPlayer == player1 ? player2 : player1;
+        doublingCube.acceptDoubling(opponent);
         System.out.println("Player " + opponent.getName() + " accepts the double. Stakes are now doubled!");
-        currentStake *= 2; // Double the stakes
-        doublingOffered = false;
-        doublingPlayer = null; // Reset doubling state
-
+        doublingPlayer = opponent; // Reset doubling state
     }
 
     private void handleRefuseDouble() {
-        if (!doublingOffered) {
-            System.out.println("No doubling offer to refuse");
-            return;
-        }
-
         Player opponent = doublingPlayer == player1 ? player2 : player1;
+        doublingCube.refuseDoubling();
+        System.out.println("Player " + opponent.getName() + " refuses to double the stakes. " + currentPlayer.getName() +
+                " wins the current stake of " + currentStake + "!");
+        doublingPlayer.addScore(doublingCube.getStake());
+        System.out.println("Current Scores: " + player1.getName() + ": " + player1.getScore() + " | " +
+                player2.getName() + ": " + player2.getScore());
 
-        System.out.println("Player " + opponent.getName() + " refuses to double the stakes." + currentPlayer.getName() +
-                "wins the current stake of" + currentStake + "!");
-        doublingPlayer.addScore(currentStake);
-        stillPlaying = false; // End the game
+        determineMatchAndGameState();
     }
 
 }

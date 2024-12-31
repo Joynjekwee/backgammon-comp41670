@@ -7,7 +7,6 @@ import java.util.*;
 
 public class Board {
     private Map<Integer, ArrayList<Checker>> board;
-    private Map<String, Integer> bearOff;
     private Bar bar;
     private BearOffArea bearOffArea;
     private PipCalculator pipCalculator;
@@ -27,7 +26,6 @@ public class Board {
         boardDisplay = new BoardDisplay(this);
         bar = new Bar();
         bearOffArea = new BearOffArea();
-        bearOff = new HashMap<>();
         c = new Constants();
         initialize();
     }
@@ -37,16 +35,18 @@ public class Board {
         for (int i = 1; i <= 24; i++) {
             board.put(i, new ArrayList<>());
         }
-        bearOff.put(c.X, 0);
-        bearOff.put(c.O, 0);
-        setupTestBearOffBoard();
-        // setupInitialBoard();
+        bar.initialise();
+        bearOffArea.initialise();
+        //setupTestBearOffBoard();
+        setupInitialBoard();
     }
 
     public void reset() {
         // Clear the board and set up initial positions
         board.clear();
-        setupInitialBoard();
+        bar.reset();
+        bearOffArea.reset();
+        initialize();
         System.out.println("Board reset for a new game.");
     }
 

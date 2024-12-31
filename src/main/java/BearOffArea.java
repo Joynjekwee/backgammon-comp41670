@@ -10,11 +10,12 @@ public class BearOffArea {
 
     public BearOffArea() {
         bearOff = new HashMap<>();
+    }
+    public void initialise() {
         bearOff.put("X", 0);
         bearOff.put("O", 0);
     }
-
-
+    public void reset() {bearOff.clear();}
     public void addChecker(String symbol) {
         bearOff.put(symbol, bearOff.get(symbol) + 1);
     }

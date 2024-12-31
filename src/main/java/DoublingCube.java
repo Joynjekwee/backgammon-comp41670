@@ -22,7 +22,8 @@ public class DoublingCube {
         this.doublingOffered = true;
     }
 
-    public void acceptDoubling() {
+    public void acceptDoubling(Player player) {
+        this.owner = player;
         this.stake *= 2;
         this.doublingOffered = false;
     }
