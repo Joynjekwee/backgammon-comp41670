@@ -37,8 +37,8 @@ public class Board {
         }
         bar.initialise();
         bearOffArea.initialise();
-        //setupTestBearOffBoard();
-        setupInitialBoard();
+        setupTestBearOffBoard();
+        //setupInitialBoard();
     }
 
     public void reset() {
@@ -126,8 +126,9 @@ public class Board {
 
     public void displayScore(Player player, int player1Score, int player2Score) {
         // Display the match score at the top
+        System.out.println();
         System.out.println("Match Score: Player1(X) = " + player1Score + " | Player2(O) = " + player2Score);
-        System.out.println(); // Line break for clarity
+
     }
 
     public boolean isMoveValid(int start, int end, Player player) {
@@ -190,8 +191,6 @@ public class Board {
     }
 
     public void executeMove(int start, int end, Player player) {
-        List<Checker> barX = bar.getCheckers(c.X);
-        List<Checker> barO = bar.getCheckers(c.O);
 
         ArrayList<Checker> endCheckers = board.get(end);
         ArrayList<Checker> startCheckers = (start == 0 || !board.containsKey(start)) ? null : board.get(start);
