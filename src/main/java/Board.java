@@ -41,12 +41,9 @@ public class Board {
         }
         bar.initialise();
         bearOffArea.initialise();
-        //setupTestBearOffBoard();
-        setupInitialBoard();
+        setupTestBearOffBoard();
+        // setupInitialBoard();
     }
-
-
-
 
     public void reset() {
         // Clear the board and set up initial positions
@@ -63,7 +60,7 @@ public class Board {
      * @param checker the checker to add
      */
 
-   protected void addChecker(int position, Checker checker) {
+    protected void addChecker(int position, Checker checker) {
         if (!board.containsKey(position)) {
             throw new IllegalArgumentException("Invalid position: " + position);
         }
@@ -133,8 +130,9 @@ public class Board {
 
     public void displayScore(Player player, int player1Score, int player2Score) {
         // Display the match score at the top
+        System.out.println();
         System.out.println("Match Score: Player1(X) = " + player1Score + " | Player2(O) = " + player2Score);
-        System.out.println(); // Line break for clarity
+
     }
 
     public boolean isMoveValid(int start, int end, Player player) {
@@ -187,7 +185,6 @@ public class Board {
         return checkers;
     }
 
-
     public boolean areThereCheckersOnTheBar(Player player) {
         return !bar.getCheckers(player.getSymbol()).isEmpty();
     }
@@ -195,8 +192,6 @@ public class Board {
     public List<MoveOption> getListOfLegalMoves(Player player, List<Integer> diceValues) {
         return legalMovements.getListOfLegalMoves(player, diceValues);
     }
-
-
 
     public List<MoveOption> canWeMakeAMove(int start, List<Integer> diceValues, Player player) {
         return legalMovements.canWeMakeAMove(start, diceValues, player);
@@ -209,7 +204,6 @@ public class Board {
     public boolean canWeBearOff(Player player, List<Integer> diceValues) {
         return legalMovements.canWeBearOff(player, diceValues);
     }
-
 
     public boolean hasCheckerInHomeArea(Player loserPlayer, Player winnerPlayer) {
         int homeStart, homeEnd;
@@ -229,7 +223,8 @@ public class Board {
             System.out.println("Position " + i + " contains: " + checkersAtPosition);
             for (Checker checker : checkersAtPosition) {
                 if (checker.getSymbol().equals(loserPlayer.getSymbol())) {
-                    System.out.println("Found a checker for loserPlayer: " + loserPlayer.getSymbol() + " at position " + i);
+                    System.out.println(
+                            "Found a checker for loserPlayer: " + loserPlayer.getSymbol() + " at position " + i);
                     return true;
                 }
             }

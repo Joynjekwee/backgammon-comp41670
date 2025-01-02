@@ -35,9 +35,15 @@ public class Main {
             // Create a new game
             Player p1 = new Player(playerName1, player1Symbol);
             Player p2 = new Player(playerName2, player2Symbol);
-            Game game = new Game(p1, p2, matchLength);
+
+            // Inject dependencies into the Game Class
+            Dice dice = new Dice();
+            Board board = new Board();
+            Constants constants = new Constants();
+
+            Game game = new Game(p1, p2, matchLength, dice, board, constants);
             game.printCommands();
-            game.playGame();
+            game.play();
 
             // Ask if the players want to start a new match
             System.out.print("Do you want to start a new match? (yes/no): ");

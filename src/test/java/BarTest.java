@@ -1,6 +1,7 @@
+
 import java.util.*;
 import org.junit.*;
-import static org.junit.Assert.*;
+import static org.Assert.*;
 
 public class BarTest {
     private Bar bar;
