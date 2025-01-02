@@ -428,11 +428,9 @@ public class Board {
         return false;
     }
 
-    public void display(Player player) {
-        boardDisplay.display(player);
+    public void display(Player player, DoublingCube doublingCube) {
+        boardDisplay.display(player, doublingCube);
     }
-
-    public void displayDoublingCube(DoublingCube doublingCube) {boardDisplay.displayDoublingStatus(doublingCube);}
 
     public void displayTotalPipCounts(Player playerX, Player player0) {
         pipCalculator.displayTotalPipCounts(playerX, player0);

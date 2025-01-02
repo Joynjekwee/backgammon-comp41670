@@ -23,6 +23,9 @@ public class DoublingCube {
     }
 
     public void acceptDoubling(Player player) {
+        if(player == this.owner) {
+            throw new IllegalStateException("Offering player can't accept the double");
+        }
         this.owner = player;
         this.stake *= 2;
         this.doublingOffered = false;
@@ -34,5 +37,11 @@ public class DoublingCube {
 
     public Player getOwner() {
         return owner;
+    }
+
+    public void reset() {
+        this.stake = 1;
+        this.doublingOffered = false;
+        this.owner = null;
     }
 }

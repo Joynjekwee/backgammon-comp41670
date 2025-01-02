@@ -9,6 +9,7 @@ public class BoardDisplay {
     private int countXOnBar = 0;
     private int countOOnBar = 0;
 
+
     public BoardDisplay(Board board) {
         this.board = board;
     }
@@ -70,16 +71,32 @@ public class BoardDisplay {
     }
 
     // Main display method
-    public void display(Player player) {
+    public void display(Player player, DoublingCube doublingCube) {
         countXOnBar = 0;
         countOOnBar = 0;
 
         // Display pip numbers for the top row
         displayTopPipNumbers(player);
-        int maxRowsNew = findCurrentMaxRows();
 
         // Display upper part of the board (points 13 to 24)
-        for (int row = 0; row <= maxRowsNew - 1; row++) {
+        displayUpperBoard();
+
+        // Display lower part of the board (points 12 to 1, reverse order)
+        displayLowerBoard();
+
+        // Display pip numbers for the bottom row
+        displayBottomPipNumbers(player);
+        System.out.println();
+        // Display bear-off counts
+        System.out.println("Player X bear-off count: " + board.getBearOffCount("X") + "\t\t\t" + "Player O bear-off count: " + board.getBearOffCount("O"));
+
+        System.out.println("Doubling Cube: " + (doublingCube.getOwner() != null ? doublingCube.getOwner().getName() : "No owner")
+                + " [Stake: " + doublingCube.getStake() + "]");
+        System.out.println();
+    }
+
+    private void displayUpperBoard() {
+        for (int row = 0; row <= findCurrentMaxRows() - 1; row++) {
             System.out.print(" ");
             for (int pointIndex = 13; pointIndex <= 18; pointIndex++) {
                 printChecker(board.getCheckersAt(pointIndex), row);
@@ -92,9 +109,10 @@ public class BoardDisplay {
         }
 
         System.out.println();
+    }
 
-        // Display lower part of the board (points 12 to 1, reverse order)
-        for (int row = maxRowsNew - 1; row >= 0; row--) {
+    private void displayLowerBoard() {
+        for (int row = findCurrentMaxRows() - 1; row >= 0; row--) {
             System.out.print(" ");
             for (int pointIndex = 12; pointIndex >= 7; pointIndex--) {
                 printChecker(board.getCheckersAt(pointIndex), row);
@@ -105,19 +123,8 @@ public class BoardDisplay {
             }
             System.out.println();
         }
-
-        // Display pip numbers for the bottom row
-        displayBottomPipNumbers(player);
-        System.out.println();
-        // Display bear-off counts
-        System.out.println("Player X bear-off count: " + board.getBearOffCount("X") + "\t\t\t" + "Player O bear-off count: " + board.getBearOffCount("O"));
     }
 
 
-    public void displayDoublingStatus(DoublingCube doublingCube) {
-        System.out.println("Doubling Cube: " + (doublingCube.getOwner() != null ? doublingCube.getOwner().getName() : "No owner")
-                + " [Stake: " + doublingCube.getStake() + "]");
-        System.out.println();
-    }
 
 }

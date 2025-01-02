@@ -10,7 +10,10 @@ public class BearOffAreaTest {
     @Before
     public void setUp() {
         bearOffArea = new BearOffArea();
+        bearOffArea.initialise();
     }
+
+
 
     @Test
    public void testAddChecker() {
@@ -24,5 +27,12 @@ public class BearOffAreaTest {
         bearOffArea.addChecker(X);
         assertEquals(2, bearOffArea.getBearOffCount(X));
         assertEquals(0, bearOffArea.getBearOffCount(O));
+    }
+
+    @Test
+    public void testReset() {
+        bearOffArea.addChecker("X");
+        bearOffArea.reset();
+        assertEquals(0, bearOffArea.getBearOffCount("X"));
     }
 }

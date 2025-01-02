@@ -9,6 +9,7 @@ public class BarTest {
     @Before
     public void setUp() {
         bar = new Bar();
+        bar.initialise();
     }
 
     @Test
@@ -32,6 +33,18 @@ public class BarTest {
 
     @Test
     public void testRemoveFromEmptyBarThrowsException() {
-        assertThrows(IllegalStateException.class, () -> bar.removeFromBar("X"));
+        assertThrows(IllegalStateException.class, () -> bar.removeFromBar(X));
+    }
+
+    @Test
+    public void testInvalidSymbol() {
+        assertThrows(NullPointerException.class, () -> bar.getCheckers("Z"));
+    }
+
+    @Test
+    public void testReset() {
+        bar.addToBar(X, new Checker(X));
+        bar.reset();
+        assertTrue(bar.getCheckers(X).isEmpty());
     }
 }
