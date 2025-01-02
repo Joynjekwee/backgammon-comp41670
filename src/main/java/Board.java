@@ -9,6 +9,8 @@ public class Board {
     private Map<Integer, ArrayList<Checker>> board;
     private Bar bar;
     private BearOffArea bearOffArea;
+    private MoveExecution moveExecution;
+    private LegalMovements legalMovements;
     private PipCalculator pipCalculator;
     private int countXOnBar = 0;
     private int countOOnBar = 0;
@@ -26,7 +28,9 @@ public class Board {
         boardDisplay = new BoardDisplay(this);
         bar = new Bar();
         bearOffArea = new BearOffArea();
+        moveExecution = new MoveExecution(board, bar, bearOffArea); // Initialize MoveExecution
         c = new Constants();
+        legalMovements = new LegalMovements(this, bar, bearOffArea, c); // Initialize LegalMovements instance
         initialize();
     }
 
@@ -40,6 +44,9 @@ public class Board {
         //setupTestBearOffBoard();
         setupInitialBoard();
     }
+
+
+
 
     public void reset() {
         // Clear the board and set up initial positions
@@ -56,7 +63,7 @@ public class Board {
      * @param checker the checker to add
      */
 
-    private void addChecker(int position, Checker checker) {
+   protected void addChecker(int position, Checker checker) {
         if (!board.containsKey(position)) {
             throw new IllegalArgumentException("Invalid position: " + position);
         }
@@ -131,33 +138,7 @@ public class Board {
     }
 
     public boolean isMoveValid(int start, int end, Player player) {
-        if (end < 1 || end > 24) {
-            return false;
-        }
-
-        if (start != 0) {
-            ArrayList<Checker> startCheckers = board.getOrDefault(start, new ArrayList<>());
-            if (startCheckers.isEmpty() || !startCheckers.get(0).getSymbol().equals(player.getSymbol())) {
-                return false;
-            }
-        } else {
-            List<Checker> barCheckers = bar.getCheckers(player.getSymbol());
-            // ArrayList<Checker> barCheckers = bar.get(player.getSymbol());
-            if (barCheckers == null || barCheckers.isEmpty()) {
-                return false;
-            }
-        }
-
-        ArrayList<Checker> endCheckers = board.getOrDefault(end, new ArrayList<>());
-        String opponentSymbol = player.getSymbol().equals(c.X) ? c.O : c.X;
-        int opponentCheckerCount = 0;
-        for (Checker c : endCheckers) {
-            if (c.getSymbol().equals(opponentSymbol)) {
-                opponentCheckerCount++;
-            }
-        }
-
-        return opponentCheckerCount <= 1;
+        return legalMovements.isMoveValid(start, end, player);
     }
 
     public void moveChecker(int start, int end) {
@@ -190,221 +171,45 @@ public class Board {
     }
 
     public void executeMove(int start, int end, Player player) {
-        List<Checker> barX = bar.getCheckers(c.X);
-        List<Checker> barO = bar.getCheckers(c.O);
-
-        ArrayList<Checker> endCheckers = board.get(end);
-        ArrayList<Checker> startCheckers = (start == 0 || !board.containsKey(start)) ? null : board.get(start);
-
-        if (start == 0) { // Moving from the bar
-            try {
-                moveCheckerToBoard(player.getSymbol(), end);
-                return;
-            } catch (IllegalStateException e) {
-                System.out.println("No checkers on the bar to move");
-                return;
-            }
-        }
-
-        if (end == 25) { // Handle bear-off
-            if (!board.get(start).isEmpty() && board.get(start).get(0).getSymbol().equals(player.getSymbol())) {
-                Checker checker = board.get(start).remove(0);
-                bearOffChecker(player.getSymbol()); // Increment the bear-off count
-
-            } else {
-                throw new IllegalStateException("No checkers at position ");
-            }
-            return;
-        }
-
-        // Hitting opponent's checker
-        if (endCheckers != null && endCheckers.size() == 1 && startCheckers != null && !startCheckers.isEmpty() &&
-                endCheckers.get(0).getPlayer() != startCheckers.get(0).getPlayer()) {
-            Checker hitChecker = endCheckers.get(0);
-            bar.addToBar(hitChecker.getSymbol(), hitChecker);
-            endCheckers.remove(hitChecker);
-        }
-
-        moveChecker(start, end);
+        moveExecution.executeMove(start, end, player, c);
     }
 
     public ArrayList<Checker> getCurrentPlayerCheckers(Player player) {
         ArrayList<Checker> checkers = new ArrayList<>();
         for (Map.Entry<Integer, ArrayList<Checker>> entry : board.entrySet()) {
             ArrayList<Checker> point = entry.getValue();
-            if (!point.isEmpty() && point.get(0).getSymbol().equals(player.getSymbol())) {
-                checkers.add(point.get(0));
+            for (Checker checker : point) { // Loop through all checkers at this position
+                if (checker.getSymbol().equals(player.getSymbol())) {
+                    checkers.add(checker);
+                }
             }
         }
         return checkers;
     }
+
 
     public boolean areThereCheckersOnTheBar(Player player) {
         return !bar.getCheckers(player.getSymbol()).isEmpty();
     }
 
     public List<MoveOption> getListOfLegalMoves(Player player, List<Integer> diceValues) {
-        if (areThereCheckersOnTheBar(player)) {
-            return canWeMoveCheckersToBoard(diceValues, player);
-        }
-
-        Set<MoveOption> moves = new HashSet<>();
-        for (Checker checker : getCurrentPlayerCheckers(player)) {
-            moves.addAll(canWeMakeAMove(checker.getPosition(), diceValues, player));
-        }
-
-        if (canWeBearOff(player)) { // Check if the player is eligible to bear off
-            int homeStart = player.getSymbol().equals("X") ? 1 : 19;
-            int homeEnd = player.getSymbol().equals("X") ? 6 : 24;
-
-            for (Checker checker : getCurrentPlayerCheckers(player)) {
-                int position = checker.getPosition();
-                if (position >= homeStart && position <= homeEnd) {
-                    for (int die : diceValues) {
-                        if (position - die < homeStart || position + die > homeEnd) { // Bear-off condition
-                            moves.add(new MoveOption(position, 25, List.of(die))); // Use 25 as the special endPos for
-                                                                                   // bear-off
-                        }
-                    }
-                }
-            }
-        }
-
-        return new ArrayList<>(moves);
+        return legalMovements.getListOfLegalMoves(player, diceValues);
     }
 
-    private boolean isDoubles(List<Integer> diceValues) {
-        if (diceValues.size() != 4)
-            return false;
-        int first = diceValues.get(0);
-        for (int d : diceValues) {
-            if (d != first)
-                return false;
-        }
-        return true;
-    }
 
-    private List<Integer> generateDiceUsedForSum(int d, int sum) {
-        // For doubles: if sum=9 and d=3, we have three dice [3,3,3]
-        List<Integer> used = new ArrayList<>();
-        int count = sum / d;
-        for (int i = 0; i < count; i++) {
-            used.add(d);
-        }
-        return used;
-    }
 
     public List<MoveOption> canWeMakeAMove(int start, List<Integer> diceValues, Player player) {
-        Set<MoveOption> potentialMoves = new HashSet<>();
-        String playerSymbol = player.getSymbol();
-        int direction = playerSymbol.equals(c.X) ? -1 : +1;
-
-        if (isDoubles(diceValues)) {
-            int d = diceValues.get(0);
-            // doubles: consider 1d, 2d, 3d, 4d
-            int[] sums = { d, d * 2, d * 3, d * 4 };
-            for (int sum : sums) {
-                int newPos = start + (direction * sum);
-                if (isMoveValid(start, newPos, player)) {
-                    potentialMoves.add(new MoveOption(start, newPos, generateDiceUsedForSum(d, sum)));
-                }
-            }
-        } else {
-            // Not doubles: normal scenario
-            // Single die moves
-            for (int die : diceValues) {
-                int newPos = start + (direction * die);
-                if (isMoveValid(start, newPos, player)) {
-                    potentialMoves.add(new MoveOption(start, newPos, List.of(die)));
-                }
-            }
-
-            // Two dice moves (if we have at least 2 dice)
-            if (diceValues.size() >= 2) {
-                for (int i = 0; i < diceValues.size(); i++) {
-                    for (int j = i + 1; j < diceValues.size(); j++) {
-                        int sum = diceValues.get(i) + diceValues.get(j);
-                        int newPos = start + (direction * sum);
-                        if (isMoveValid(start, newPos, player)) {
-                            List<Integer> diceUsed = Arrays.asList(diceValues.get(i), diceValues.get(j));
-                            // Sort for consistency in equals/hashCode if needed
-                            potentialMoves.add(new MoveOption(start, newPos, diceUsed));
-                        }
-                    }
-                }
-            }
-        }
-
-        return new ArrayList<>(potentialMoves);
+        return legalMovements.canWeMakeAMove(start, diceValues, player);
     }
 
     public List<MoveOption> canWeMoveCheckersToBoard(List<Integer> diceValues, Player player) {
-        Set<MoveOption> movesFromBar = new HashSet<>();
-        String playerSymbol = player.getSymbol();
-        int direction = playerSymbol.equals(c.X) ? -1 : +1;
-
-        if (isDoubles(diceValues)) {
-            int d = diceValues.get(0);
-            int[] sums = { d, d * 2, d * 3, d * 4 };
-            for (int sum : sums) {
-                int newPos = (direction > 0) ? sum : (25 - sum);
-                if (isMoveValid(0, newPos, player)) {
-                    movesFromBar.add(new MoveOption(0, newPos, generateDiceUsedForSum(d, sum)));
-                }
-            }
-        } else {
-            // Single die moves
-            for (int die : diceValues) {
-                int newPos = (direction > 0) ? die : (25 - die);
-                if (isMoveValid(0, newPos, player)) {
-                    movesFromBar.add(new MoveOption(0, newPos, List.of(die)));
-                }
-            }
-
-            // Two dice moves if non-doubles and at least 2 dice
-            if (diceValues.size() >= 2) {
-                for (int i = 0; i < diceValues.size(); i++) {
-                    for (int j = i + 1; j < diceValues.size(); j++) {
-                        int sum = diceValues.get(i) + diceValues.get(j);
-                        int newPos = (direction > 0) ? sum : (25 - sum);
-                        if (isMoveValid(0, newPos, player)) {
-                            List<Integer> diceUsed = Arrays.asList(diceValues.get(i), diceValues.get(j));
-                            movesFromBar.add(new MoveOption(0, newPos, diceUsed));
-                        }
-                    }
-                }
-            }
-        }
-
-        return new ArrayList<>(movesFromBar);
+        return legalMovements.canWeMoveCheckersToBoard(diceValues, player);
     }
 
-    public boolean canWeBearOff(Player player) {
-        Map<Integer, ArrayList<Checker>> boardPositions = this.getBoardState();
-        String playerSymbol = player.getSymbol();
-        int start, end;
-
-        if (playerSymbol.equals(c.X)) {
-            start = 1;
-            end = 6;
-        } else if (playerSymbol.equals(c.O)) {
-            start = 19;
-            end = 24;
-        } else {
-            return false;
-        }
-
-        for (int i = 1; i <= 24; i++) {
-            if (i < start || i > end) {
-                for (Checker checker : boardPositions.get(i)) {
-                    if (checker.getSymbol().equals(playerSymbol)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+    public boolean canWeBearOff(Player player, List<Integer> diceValues) {
+        return legalMovements.canWeBearOff(player, diceValues);
     }
+
 
     public boolean hasCheckerInHomeArea(Player loserPlayer, Player winnerPlayer) {
         int homeStart, homeEnd;
@@ -416,11 +221,15 @@ public class Board {
             homeStart = 19;
             homeEnd = 24;
         }
+        System.out.println("Checking home area for winnerPlayer: " + winnerPlayer.getSymbol());
+        System.out.println("Home area range: " + homeStart + " to " + homeEnd);
 
         for (int i = homeStart; i <= homeEnd; i++) {
             List<Checker> checkersAtPosition = getCheckersAt(i);
+            System.out.println("Position " + i + " contains: " + checkersAtPosition);
             for (Checker checker : checkersAtPosition) {
                 if (checker.getSymbol().equals(loserPlayer.getSymbol())) {
+                    System.out.println("Found a checker for loserPlayer: " + loserPlayer.getSymbol() + " at position " + i);
                     return true;
                 }
             }
