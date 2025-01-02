@@ -1,12 +1,15 @@
-import java.util.*;
-import org.junit.*;
-import static org.junit.Assert.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
 
     private Player player;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         player = new Player("Alice", "X");
     }

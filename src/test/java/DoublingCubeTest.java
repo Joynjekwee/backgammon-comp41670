@@ -1,12 +1,17 @@
-import org.junit.*;
-import static org.junit.Assert.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+
 
 public class DoublingCubeTest {
 
     private DoublingCube doublingCube;
     private Player player;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         doublingCube = new DoublingCube();
         player = new Player("Alice", "X");

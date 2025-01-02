@@ -1,9 +1,11 @@
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LegalMovementsTest {
 
@@ -15,7 +17,7 @@ public class LegalMovementsTest {
     private Player playerX;
     private Player playerO;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // Initialize dependencies
         bar = new Bar();
@@ -138,11 +140,11 @@ public class LegalMovementsTest {
         );
 
         // Assert the expected number of unique moves
-        assertEquals("Expected 4 unique moves for doubles", expectedMoves.size(), moves.size());
+        assertEquals(expectedMoves.size(), moves.size(), "Expected 4 unique moves for doubles");
 
         // Assert that the generated moves match the expected moves
         for (MoveOption expectedMove : expectedMoves) {
-            assertTrue("Expected move missing: " + expectedMove, moves.contains(expectedMove));
+            assertTrue(moves.contains(expectedMove), "Expected move missing: " + expectedMove);
         }
     }
 
@@ -171,14 +173,14 @@ public class LegalMovementsTest {
 
         // Ensure duplicates are removed
         Set<MoveOption> uniqueMoves = new HashSet<>(moves);
-        assertEquals("Expected unique moves only", uniqueMoves.size(), moves.size());
+        assertEquals(uniqueMoves.size(), moves.size(), "Expected unique moves only");
 
         // Assert the expected number of unique moves
-        assertEquals("Expected unique move count", expectedMoves.size(), moves.size());
+        assertEquals(expectedMoves.size(), moves.size(), "Expected unique move count");
 
         // Assert that the generated moves match the expected moves
         for (MoveOption expectedMove : expectedMoves) {
-            assertTrue("Expected move missing: " + expectedMove, moves.contains(expectedMove));
+            assertTrue(moves.contains(expectedMove), "Expected move missing: " + expectedMove);
         }
     }
 
@@ -233,11 +235,11 @@ public class LegalMovementsTest {
         System.out.println("Actual moves: " + actualMoves);
 
         // Assert the expected number of moves
-        assertEquals("Expected 10 legal moves (including duplicates)", expectedMoves.size(), actualMoves.size());
+        assertEquals(expectedMoves.size(), actualMoves.size(), "Expected 10 legal moves (including duplicates)");
 
         // Assert that all expected moves are in the actual moves
         for (MoveOption expectedMove : expectedMoves) {
-            assertTrue("Missing expected move: " + expectedMove, actualMoves.contains(expectedMove));
+            assertTrue(actualMoves.contains(expectedMove), "Missing expected move: " + expectedMove);
         }
     }
 
@@ -270,15 +272,15 @@ public class LegalMovementsTest {
 
         // Verify that the only moves generated are bear-off moves
         for (MoveOption move : moves) {
-            assertEquals("Unexpected non-bear-off move generated", 25, move.getEndPos());
+            assertEquals(25, move.getEndPos(), "Unexpected non-bear-off move generated");
         }
 
         // Assert that moves exist only if bear-off is valid
         boolean canBearOff = board.canWeBearOff(playerX, diceValues);
         if (canBearOff) {
-            assertFalse("Expected only bear-off moves, but none were generated", moves.isEmpty());
+            assertFalse(moves.isEmpty(), "Expected only bear-off moves, but none were generated");
         } else {
-            assertTrue("Expected no legal moves, but some were returned", moves.isEmpty());
+            assertTrue(moves.isEmpty(), "Expected no legal moves, but some were returned");
         }
     }
 

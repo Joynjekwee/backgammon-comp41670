@@ -1,13 +1,15 @@
-import java.util.*;
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class BearOffAreaTest {
     private BearOffArea bearOffArea;
     private final String X = "X";
     private final String O = "O";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         bearOffArea = new BearOffArea();
         bearOffArea.initialise();

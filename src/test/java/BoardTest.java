@@ -1,14 +1,18 @@
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
 import java.util.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class BoardTest {
     private Board board;
     private Player playerX;
     private Player playerO;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         board = new Board();
         playerO = new Player("Teju", "X");
@@ -73,7 +77,7 @@ public class BoardTest {
         System.out.println("Debug: Retrieved checkers for Player X: " + checkersX);
 
         // Assert the expected number of checkers
-        assertEquals("Player X should have 15 checkers.", 15, checkersX.size());
+        assertEquals(15, checkersX.size(), "Player X should have 15 checkers.");
     }
 
 
@@ -93,7 +97,7 @@ public class BoardTest {
         System.out.println("Bar for Player O: " + board.getBar("O"));
 
         // Verify that Player X has a checker on the bar
-        assertTrue("Player X should have a checker on the bar.", board.areThereCheckersOnTheBar(playerX));
+        assertTrue(board.areThereCheckersOnTheBar(playerX), "Player X should have a checker on the bar.");
     }
 
 
@@ -125,8 +129,8 @@ public class BoardTest {
         }
 
         // Run assertions
-        assertTrue("Player X should have checkers in their home area.", board.hasCheckerInHomeArea(playerX, playerX));
-        assertFalse("Player O should not have checkers in Player X's home area.", board.hasCheckerInHomeArea(playerX, playerO));
+        assertTrue(board.hasCheckerInHomeArea(playerX, playerX), "Player X should have checkers in their home area.");
+        assertFalse(board.hasCheckerInHomeArea(playerX, playerO), "Player O should not have checkers in Player X's home area.");
     }
 
 

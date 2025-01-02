@@ -1,14 +1,17 @@
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.*;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MoveOptionTest {
     private MoveOption moveOption1;
     private MoveOption moveOption2;
     private MoveOption moveOption3;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         moveOption1 = new MoveOption(1, 5, Arrays.asList(3, 2));
         moveOption2 = new MoveOption(1, 5, Arrays.asList(2, 3)); // Same as moveOption1 but dice order differs

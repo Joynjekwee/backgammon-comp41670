@@ -1,6 +1,9 @@
-import org.junit.*;
-import static org.junit.Assert.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PipCalculatorTest {
 
@@ -8,7 +11,7 @@ public class PipCalculatorTest {
     private Map<Integer, ArrayList<Checker>> board;
     private Player playerX;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         board = new HashMap<>();
         for (int i = 1; i <= 24; i++) {

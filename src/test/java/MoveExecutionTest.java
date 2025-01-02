@@ -1,11 +1,12 @@
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MoveExecutionTest {
 
@@ -17,7 +18,7 @@ public class MoveExecutionTest {
     private Player playerX;
     private Player playerO;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // Initialize dependencies
         board = new HashMap<>();
@@ -100,16 +101,19 @@ public class MoveExecutionTest {
         assertEquals(1, bar.getCheckers(constants.O).size());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testMoveFromEmptyBarFails() {
-        // Try to move a checker from an empty bar
-        moveExecution.moveFromBar(constants.X, 6);
+        // Expect an IllegalStateException when trying to move a checker from an empty bar
+        assertThrows(IllegalStateException.class, () -> {
+            moveExecution.moveFromBar(constants.X, 6);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testInvalidBearOffFails() {
-        // Try to bear off when the position has no checkers
-        moveExecution.executeBearOff(6, playerX);
+        assertThrows(IllegalStateException.class, () -> {
+            moveExecution.executeBearOff(6, playerX);
+        });
     }
 }
 
