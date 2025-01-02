@@ -64,6 +64,10 @@ public class LegalMovementsTest {
 
     @Test
     public void testIsMoveValid_InvalidStartPosition() {
+        // Clear all positions on the board
+        for (int i = 1; i <= 24; i++) {
+            board.getBoardState().put(i, new ArrayList<>()); // Reset each position to an empty list
+        }
         // No checker at the start position
         boolean result = legalMovements.isMoveValid(6, 8, playerX);
         assertFalse(result);
@@ -71,18 +75,30 @@ public class LegalMovementsTest {
 
     @Test
     public void testCanWeBearOff_Eligible() {
-        // Set up the board
+        // Clear all board positions
+        for (int i = 1; i <= 24; i++) {
+            board.getBoardState().put(i, new ArrayList<>());
+        }
+
+        // Place all Player X's checkers in positions 1–6
         for (int i = 1; i <= 6; i++) {
-            board.getBoardState().get(i).add(new Checker(constants.X, i));
+            board.getBoardState().putIfAbsent(i, new ArrayList<>()); // Ensure the list is initialized
+            board.getBoardState().get(i).add(new Checker(constants.X, i)); // Add a checker for Player X
         }
 
         // Set dice values
         List<Integer> diceValues = Arrays.asList(1, 2);
 
+        // Debugging output
+        System.out.println("Board state: " + board.getBoardState());
+        System.out.println("Dice values: " + diceValues);
+
         // Check if the player is eligible to bear off
-        boolean result = legalMovements.canWeBearOff(playerX,diceValues);
-        assertTrue(result);
+        boolean result = legalMovements.canWeBearOff(playerX, diceValues);
+        assertTrue(result, "Player X should be eligible to bear off.");
     }
+
+
 
     @Test
     public void testCanWeBearOff_NotEligible() {
@@ -200,6 +216,11 @@ public class LegalMovementsTest {
     }
     @Test
     public void testGetListOfLegalMoves_WithValidMoves() {
+        // Clear the board state
+        for (int i = 1; i <= 24; i++) {
+            board.getBoardState().put(i, new ArrayList<>()); // Reset each position to an empty list
+        }
+
         // Set up the board
         Checker checker1 = new Checker(constants.X, 1);
         Checker checker2 = new Checker(constants.X, 2);
