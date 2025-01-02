@@ -288,6 +288,14 @@ public class Game {
         }
     }
 
+    public void handleRollCommand() {
+        dice.roll(); // This will use the manual dice values
+        String dieResults = dice.getDiceResults();
+        System.out.println("Roll Result: " + dieResults);
+        diceValues = new ArrayList<>(dice.getMoves());
+        handleMoves(diceValues);
+    }
+
     private void handleDiceRollManualMode(int die1, int die2) {
         dice.enableManualMode();
         dice.setManualDice(List.of(die1, die2));
@@ -329,13 +337,7 @@ public class Game {
         }
     }
 
-    public void handleRoll() {
-        dice.roll(); // This will use the manual dice values
-        String dieResults = dice.getDiceResults();
-        System.out.println("Roll Result: " + dieResults);
-        diceValues = new ArrayList<>(dice.getMoves());
-        handleMoves(diceValues);
-    }
+
 
     private MoveOption parseUserMoveByCode(String userInput, List<MoveOption> legalMoves) {
         int index = userInput.charAt(0) - 'A'; // Convert 'A', 'B', 'C' to 0, 1, 2...
@@ -363,7 +365,7 @@ public class Game {
             }
         } else {
             System.out.println("The game ended in a Single");
-            winnerPlayer.addScore(1*doublingCube.getStake());
+            winnerPlayer.addScore(doublingCube.getStake());
         }
 
         board.displayScore(currentPlayer, player1.getScore(), player2.getScore());
@@ -391,7 +393,7 @@ public class Game {
 
     private void processTestCommands() {
         while (!commandQueue.isEmpty()) {
-            String command = commandQueue.remove(0); // Fetch next command
+            String command = commandQueue.removeFirst(); // Fetch next command
             System.out.println("Processing command: " + command); // Debugging output
             processUserCommand(command);
         }
@@ -400,8 +402,7 @@ public class Game {
 
     private String getUserInput() {
         if (testMode && !commandQueue.isEmpty()) {
-            String testInput = commandQueue.remove(0);
-            return testInput;
+            return commandQueue.removeFirst();
         }
         return new Scanner(System.in).nextLine().trim();
     }
@@ -414,41 +415,6 @@ public class Game {
             return 25 - actualIndex;
         }
         return actualIndex;
-    }
-
-    /**
-     * Parses user input in the format "start to end" from the player's perspective.
-     * Convert from player's displayed perspective back to actual board index.
-     */
-    private MoveOption parseUserMoveInput(String input, List<MoveOption> legalMoves) {
-
-        String[] parts = input.toLowerCase().split("to");
-        if (parts.length != 2) {
-            return null;
-        }
-
-        try {
-            int displayedStart = Integer.parseInt(parts[0].trim());
-            int actualStart = currentPlayer.getSymbol().equals("O") ? (25 - displayedStart) : displayedStart;
-
-            int actualEnd;
-            if (parts[1].trim().equalsIgnoreCase("bear off")) {
-                actualEnd = 25; // Special end position for bear-off
-            } else {
-                int displayedEnd = Integer.parseInt(parts[1].trim());
-                actualEnd = currentPlayer.getSymbol().equals("O") ? (25 - displayedEnd) : displayedEnd;
-            }
-
-            for (MoveOption move : legalMoves) {
-                if (move.getStartPos() == actualStart && move.getEndPos() == actualEnd) {
-                    return move;
-                }
-            }
-        } catch (NumberFormatException e) {
-            return null;
-        }
-
-        return null;
     }
 
     /**

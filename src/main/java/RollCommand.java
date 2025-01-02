@@ -1,5 +1,3 @@
-import java.util.List;
-
 public class RollCommand implements Command {
    private Game game;
 
@@ -10,6 +8,6 @@ public class RollCommand implements Command {
 
     @Override
     public void execute() {
-        game.handleRoll();
+        game.handleRollCommand();
     }
 }
