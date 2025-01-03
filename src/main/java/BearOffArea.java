@@ -33,4 +33,9 @@ public class BearOffArea {
         // Safely retrieve the bear-off count or return 0 if the symbol does not exist
         return bearOff.getOrDefault(symbol, 0);
     }
+
+    // Test Helper Method to bearoff all checkers
+    public void setBearOffCount(String symbol, int count) {
+        bearOff.replace(symbol, count);
+    }
 }

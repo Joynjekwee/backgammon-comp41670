@@ -239,4 +239,8 @@ public class Board {
     public void displayTotalPipCounts(Player playerX, Player player0) {
         pipCalculator.displayTotalPipCounts(playerX, player0);
     }
+
+    public void setBearOffCount(String symbol, int count) {
+        bearOffArea.setBearOffCount(symbol, count);
+    }
 }

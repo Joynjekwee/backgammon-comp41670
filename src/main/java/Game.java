@@ -123,7 +123,7 @@ public class Game {
     }
 
 
-    private void initialiseGame() {
+    public void initialiseGame() {
         currentPlayer = whoGoesFirst();
         displayPlayers();
         board.display(currentPlayer, doublingCube);
@@ -196,7 +196,7 @@ public class Game {
         return false;
     }
 
-    private boolean checkMatchState() {
+    public boolean checkMatchState() {
         // Check if the match is over
         if (player1.getScore() >= matchLength) {
             System.out.printf("Match Over! %s wins the match with %d points!\n", player1.getName(),
@@ -212,7 +212,7 @@ public class Game {
         return false;
     }
 
-    private void resetGameForNewRound() {
+    public void resetGameForNewRound() {
         System.out.println("Starting a new game...");
         doublingCube.reset();
         board.reset(); // Reset the board for the next game
@@ -347,7 +347,10 @@ public class Game {
         return null; // Invalid input
     }
 
-    private void determineResultType() {
+    public String getWinner() {
+        return winner;
+    }
+    public void determineResultType() {
         Player winnerPlayer = winner.equals(player1.getName()) ? player1 : player2;
         Player loserPlayer = winnerPlayer == player1 ? player2 : player1;
 
@@ -371,6 +374,13 @@ public class Game {
         board.displayScore(currentPlayer, player1.getScore(), player2.getScore());
     }
 
+    public void enableTestMode() {
+        testMode = true;
+    }
+
+    public void disableTestMode() {
+        testMode = false;
+    }
     // Process commands from a file
     private void processTestFile(String filename) {
         if (filename == null || filename.isEmpty()) {
@@ -381,14 +391,22 @@ public class Game {
         try (Scanner fileReader = new Scanner(new File(filename))) {
             System.out.println("Loading test commands from: " + filename);
             while (fileReader.hasNextLine()) {
-                commandQueue.add(fileReader.nextLine().trim());
+               addCommandToQueue(fileReader.nextLine().trim());
             }
-            testMode = true;
+            enableTestMode();
             processTestCommands(); // Process all commands in test mode
         } catch (FileNotFoundException e) {
             System.out.println("File: " + filename + " not found.");
         }
 
+    }
+
+    public void addCommandToQueue(String command) {
+        if (testMode) {
+            commandQueue.add(command);
+        } else {
+            System.out.println("Test mode is not enabled. Please enable test mode before adding commands.");
+        }
     }
 
     private void processTestCommands() {
@@ -397,7 +415,7 @@ public class Game {
             System.out.println("Processing command: " + command); // Debugging output
             processUserCommand(command);
         }
-        testMode = false; // Disable test mode after processing
+       disableTestMode(); // Disable test mode after processing
     }
 
     private String getUserInput() {
@@ -452,7 +470,7 @@ public class Game {
 
     public void doubleCommand() {
         Player opponent = currentPlayer == player1 ? player2 : player1;
-
+        doublingPlayer = currentPlayer;
         if(doublingCube.getOwner() == null) {
             doublingCube.offerDoubling(currentPlayer);
         }
@@ -464,7 +482,7 @@ public class Game {
         doublingCube.offerDoubling(currentPlayer);
 
         if (doublingCube.getOwner() == currentPlayer && doublingCube.isDoublingOffered()) {
-            doublingPlayer = currentPlayer;
+           // doublingPlayer = currentPlayer;
             System.out.println("Player " + currentPlayer.getName() + " offers to double the stakes.");
             System.out.println("Player " + opponent.getName() + ", enter 'accept' to double stakes or 'refuse' to end game");
 
