@@ -17,5 +17,7 @@ public class CommandHandler {
        }
    }
 
-
+    public Map<String, Command> getCommandMap() {
+        return commandMap;
+    }
 }
