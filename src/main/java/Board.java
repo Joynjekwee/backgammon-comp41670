@@ -12,6 +12,7 @@ public class Board {
     private MoveExecution moveExecution;
     private LegalMovements legalMovements;
     private PipCalculator pipCalculator;
+    private Checker checker;
     private int countXOnBar = 0;
     private int countOOnBar = 0;
     private Constants c;
@@ -41,8 +42,8 @@ public class Board {
         }
         bar.initialise();
         bearOffArea.initialise();
-        //setupTestBearOffBoard();
-        setupInitialBoard();
+        setupTestBearOffBoard();
+        //setupInitialBoard();
     }
 
     public void reset() {
@@ -148,6 +149,7 @@ public class Board {
             throw new IllegalStateException("No checkers at starting position.");
         }
         Checker check = board.get(start).remove(0);
+        checker.setPosition(end); // Update the checker's position
         board.get(end).add(check);
     }
 

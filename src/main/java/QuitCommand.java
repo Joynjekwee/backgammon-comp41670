@@ -9,6 +9,6 @@ public class QuitCommand implements Command {
     public void execute() {
         System.out.println("Quitting Game Now...");
         game.setIfMatchOver(false);
-        game.setGameOver(true);
+        game.setGameOver(false);
     }
 }

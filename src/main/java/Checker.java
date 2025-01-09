@@ -20,7 +20,13 @@ public class Checker {
     public int getPosition() {
         return position;
     }
+
     public  String getSymbol() {return symbol;}
+
+    //setter
+    public void setPosition(int position) {
+        this.position = position;
+    }
 
 
 
