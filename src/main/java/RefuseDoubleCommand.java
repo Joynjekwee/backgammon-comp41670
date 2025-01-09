@@ -1,3 +1,6 @@
+/**
+ * Command to refuse a doubling offer in the game.
+ */
 public class RefuseDoubleCommand implements Command {
     private Game game;
 

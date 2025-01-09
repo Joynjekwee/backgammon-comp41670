@@ -1,3 +1,7 @@
+
+/**
+ * Command to display pip counts for the current game state.
+ */
 public class PipCommand implements Command {
     private Game game;
 

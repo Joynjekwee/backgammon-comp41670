@@ -1,3 +1,6 @@
+/**
+ * Command to quit the current game.
+ */
 public class QuitCommand implements Command {
     private Game game;
 
@@ -8,7 +11,7 @@ public class QuitCommand implements Command {
     @Override
     public void execute() {
         System.out.println("Quitting Game Now...");
-        game.setIfMatchOver(false);
-        game.setGameOver(false);
+        game.setIfMatchOver(true);
+        game.setGameOver(true);
     }
 }

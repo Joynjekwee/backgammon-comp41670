@@ -11,26 +11,39 @@ public class Game {
      * and tracks the game state.
      */
 
-    private final int matchLength;
+    private final int matchLength; // Length of match in points
     private final Player player1, player2;
-    private Player currentPlayer, doublingPlayer;
+    private Player currentPlayer, doublingPlayer; // Tracks current and doubling player
     private final Board board;
     private Dice dice;
     private DoublingCube doublingCube;
     private ArrayList<Integer> diceValues;
-    private String winner;
+    private String winner; // Stores winners name
     private boolean gameOver = false, matchOver = false, testMode = false, doublingOffered = false;
-    private Constants constants;
-    private List<String> commandQueue;
+    private Constants constants; // Game constants
+    private List<String> commandQueue; // Queue of test commands
     private int currentStake = 1;
-    private CommandHandler commandHandler;
-
+    private CommandHandler commandHandler; // Handles user commands
+    private static final String ROLL = "roll";
+    private static final String DICE = "dice";
+    private static final String DOUBLE = "double";
+    private static final String HINT  = "hint";
+    private static final String TEST = "test";
+    private static final String PIP = "pip";
+    private static final String ACCEPT = "accept";
+    private static final String REFUSE = "refuse";
+    private static final String QUIT = "quit";
+    private static final int BEAR_OFF_TARGET = 15;
 
     /**
-     * Creates a new Game instance with the specified players
-     * 
-     * @param player1 the first player
-     * @param player2 the second player
+     * Constructs a new Game instance with the specified players, board, and settings.
+     *
+     * @param player1    the first player
+     * @param player2    the second player
+     * @param matchLength the match length in points
+     * @param dice        the dice object
+     * @param board       the game board
+     * @param constants   the game constants
      */
 
     public Game(Player player1, Player player2, int matchLength, Dice dice, Board board, Constants constants) {
@@ -49,26 +62,19 @@ public class Game {
     }
 
 
-    private void registerCommands() {
-        commandHandler.registerCommand("roll", new RollCommand(this));
-        commandHandler.registerCommand("quit", new QuitCommand(this));
-        commandHandler.registerCommand("hint", new HintCommand(this));
-        commandHandler.registerCommand("double", new DoubleCommand(this));
-        commandHandler.registerCommand("accept", new AcceptDoubleCommand(this));
-        commandHandler.registerCommand("refuse", new RefuseDoubleCommand(this));
-        commandHandler.registerCommand("pip", new PipCommand(this));
-        commandHandler.registerCommand("dice", new DiceCommand(this));
-        commandHandler.registerCommand("test", new TestCommand(this));
-    }
-
     /**
-     * Starts the game, displaying player details and initializing gameplay.
+     * Registers all available commands for the game.
      */
-    public void displayPlayers() {
-        System.out.println();
-        System.out.print("Player 1: " + player1.getName() + " (" + player1.getSymbol() + ")" + "\t\t\t\t"
-                + "Player 2: " + player2.getName() + " (" + player2.getSymbol() + ")" + "\n");
-        System.out.println();
+    private void registerCommands() {
+        commandHandler.registerCommand(constants.ROLL, new RollCommand(this));
+        commandHandler.registerCommand(constants.QUIT, new QuitCommand(this));
+        commandHandler.registerCommand(constants.HINT, new HintCommand(this));
+        commandHandler.registerCommand(constants.DOUBLE, new DoubleCommand(this));
+        commandHandler.registerCommand(constants.ACCEPT, new AcceptDoubleCommand(this));
+        commandHandler.registerCommand(constants.REFUSE, new RefuseDoubleCommand(this));
+        commandHandler.registerCommand(constants.PIP, new PipCommand(this));
+        commandHandler.registerCommand(constants.DICE, new DiceCommand(this));
+        commandHandler.registerCommand(constants.TEST, new TestCommand(this));
     }
 
     // Getters and Setters
@@ -93,6 +99,20 @@ public class Game {
         gameOver = b;
     }
 
+    /**
+     * Starts the game, displaying player details and initializing gameplay.
+     */
+    private void displayPlayers() {
+        System.out.println();
+        System.out.print("Player 1: " + player1.getName() + " (" + player1.getSymbol() + ")" + "\t\t\t\t"
+                + "Player 2: " + player2.getName() + " (" + player2.getSymbol() + ")" + "\n");
+        System.out.println();
+    }
+
+    /**
+     * Starts main game loop
+     */
+
     public void play() {
         while (!matchOver) {
             initialiseGame();
@@ -106,9 +126,7 @@ public class Game {
 
                 processUserCommand(userInput);
 
-                // Check if the game is over
                 if (isGameOver()) {
-                    gameOver = true;
                     System.out.println();
                     printSeperator();
                     System.out.printf("Game Over! %s wins this game.\n", winner);
@@ -122,7 +140,9 @@ public class Game {
         }
     }
 
-
+    /**
+     * Initialise new game round.
+     */
     private void initialiseGame() {
         currentPlayer = whoGoesFirst();
         displayPlayers();
@@ -135,7 +155,8 @@ public class Game {
      * @return The player who rolled the highest number.
      */
 
-    public Player whoGoesFirst() {
+
+    private Player whoGoesFirst() {
         System.out.println("Rolling to determine the first player...");
 
         int player1roll = dice.rollSingleDie();
@@ -154,42 +175,37 @@ public class Game {
             System.out.println();
             printSeperator();
             return player2;
-        } else {
-            System.out.println("It's a tie! Rolling again....");
-            return whoGoesFirst();
         }
+        System.out.println("It's a tie! Rolling again....");
+        return whoGoesFirst();
+
     }
 
-    public void printSeperator() {
+    // Seperator for clarity
+    private void printSeperator() {
         System.out.println("=============================================================");
     }
 
     /**
-     * Displays a list of available user commands.
+     * Processes the user's command and takes the appropriate action.
+     *
+     * @param command The command entered by the user.
      */
-    public void printCommands() {
-        printSeperator();
-        System.out.println("Possible commands to input");
-        System.out.println("1.Roll - to roll the dice");
-        System.out.println("2.Double - to double the stakes");
-        System.out.println("3.Hint - to see commands available to input");
-        System.out.println("4.Pip - to show pip count");
-        System.out.println("5.Test - to run a test file of commands");
-        System.out.println("6.Dice - to manually select dice values");
-        System.out.println("7.Quit - to end game");
-        printSeperator();
-        System.out.println();
+
+    private void processUserCommand(String command) {
+
+        commandHandler.handleCommand(command);
     }
 
     private void switchPlayer() {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
     }
 
-    public boolean isGameOver() {
-        if (board.getBearOffCount(constants.X) == 15) {
+    private boolean isGameOver() {
+        if (board.getBearOffCount(constants.X) == constants.MAX_CHECKERS) {
             winner = player1.getName();
             return true;
-        } else if (board.getBearOffCount(constants.O) == 15) {
+        } else if (board.getBearOffCount(constants.O) == constants.MAX_CHECKERS) {
             winner = player2.getName();
             return true;
         }
@@ -212,13 +228,9 @@ public class Game {
         return false;
     }
 
-    private void resetGameForNewRound() {
-        System.out.println("Starting a new game...");
-        doublingCube.reset();
-        board.reset(); // Reset the board for the next game
-        initialiseGame();
-    }
-
+    /**
+     * Determines the match state and either resets or ends the match.
+     */
     private void determineMatchAndGameState() {
        if(checkMatchState()) {
            gameOver = true;
@@ -227,32 +239,43 @@ public class Game {
        }
     }
 
-    /**
-     * Processes the user's command and takes the appropriate action.
-     *
-     * @param command The command entered by the user.
-     */
+    private void resetGameForNewRound() {
+        System.out.println("Starting a new game...");
+        doublingCube.reset();
+        board.reset(); // Reset the board for the next game
+        initialiseGame();
+    }
 
-    private void processUserCommand(String command) {
-        commandHandler.handleCommand(command);
+    private String getUserInput() {
+        if (testMode && !commandQueue.isEmpty()) {
+            return commandQueue.removeFirst();
+        }
+        return new Scanner(System.in).nextLine().trim();
+    }
+
+
+
+    /**
+     * Displays a list of available user commands.
+     */
+    public void printCommands() {
+        printSeperator();
+        System.out.println("Possible commands to input");
+        System.out.println("1.Roll - to roll the dice");
+        System.out.println("2.Double - to double the stakes");
+        System.out.println("3.Hint - to see commands available to input");
+        System.out.println("4.Pip - to show pip count");
+        System.out.println("5.Test - to run a test file of commands");
+        System.out.println("6.Dice - to manually select dice values");
+        System.out.println("7.Quit - to end game");
+        printSeperator();
+        System.out.println();
     }
 
     public void handleTestCommand() {
         System.out.println("Input filename (must be of name.txt format):");
         processTestFile(getUserInput());
     }
-
-    public void handleMoreLegalMovesCommand() {
-        List<MoveOption> hints = board.getListOfLegalMoves(currentPlayer, diceValues);
-        if (hints.isEmpty()) {
-            System.out.println("No legal moves available.");
-        } else {
-            System.out.println("Here are some legal moves:");
-            printLegalMovesWithCodes(hints);
-        }
-    }
-
-
 
     private static final int MIN_DICE_VALUE = 1;
     private static final int MAX_DICE_VALUE = 6;
@@ -337,8 +360,6 @@ public class Game {
         }
     }
 
-
-
     private MoveOption parseUserMoveByCode(String userInput, List<MoveOption> legalMoves) {
         int index = userInput.charAt(0) - 'A'; // Convert 'A', 'B', 'C' to 0, 1, 2...
         if (index >= 0 && index < legalMoves.size()) {
@@ -347,6 +368,9 @@ public class Game {
         return null; // Invalid input
     }
 
+    /**
+     * Determines what way the game ended in according to backgammon rules.
+     */
     private void determineResultType() {
         Player winnerPlayer = winner.equals(player1.getName()) ? player1 : player2;
         Player loserPlayer = winnerPlayer == player1 ? player2 : player1;
@@ -400,18 +424,11 @@ public class Game {
         testMode = false; // Disable test mode after processing
     }
 
-    private String getUserInput() {
-        if (testMode && !commandQueue.isEmpty()) {
-            return commandQueue.removeFirst();
-        }
-        return new Scanner(System.in).nextLine().trim();
-    }
-
     /**
      * Helper to get displayed index based on current player's perspective.
      */
     private int displayedIndex(Player player, int actualIndex) {
-        if (player.getSymbol().equals("O")) {
+        if (player.getSymbol().equals(constants.O)) {
             return 25 - actualIndex;
         }
         return actualIndex;
@@ -421,7 +438,7 @@ public class Game {
      * Execute the given MoveOption and remove the used dice.
      * Print the executed move from the player's perspective.
      */
-    public void playMove(MoveOption chosenMove, Player currentPlayer, List<Integer> diceValues) {
+    private void playMove(MoveOption chosenMove, Player currentPlayer, List<Integer> diceValues) {
         board.executeMove(chosenMove.getStartPos(), chosenMove.getEndPos(), currentPlayer);
 
         for (Integer usedDie : chosenMove.getDiceUsed()) {
@@ -439,7 +456,7 @@ public class Game {
     /**
      * Print legal moves from the player's perspective.
      */
-    public void printLegalMovesWithCodes(List<MoveOption> legalMoves) {
+    private void printLegalMovesWithCodes(List<MoveOption> legalMoves) {
         char code = 'A'; // Start with 'A'
         for (MoveOption move : legalMoves) {
             int dispStart = displayedIndex(currentPlayer, move.getStartPos());
