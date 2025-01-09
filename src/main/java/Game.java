@@ -65,7 +65,7 @@ public class Game {
     /**
      * Registers all available commands for the game.
      */
-    private void registerCommands() {
+    protected void registerCommands() {
         commandHandler.registerCommand(constants.ROLL, new RollCommand(this));
         commandHandler.registerCommand(constants.QUIT, new QuitCommand(this));
         commandHandler.registerCommand(constants.HINT, new HintCommand(this));
@@ -100,10 +100,14 @@ public class Game {
         gameOver = b;
     }
 
+    public String getWinner() {
+        return winner;
+    }
+
     /**
      * Starts the game, displaying player details and initializing gameplay.
      */
-    private void displayPlayers() {
+    protected void displayPlayers() {
         System.out.println();
         System.out.print("Player 1: " + player1.getName() + " (" + player1.getSymbol() + ")" + "\t\t\t\t"
                 + "Player 2: " + player2.getName() + " (" + player2.getSymbol() + ")" + "\n");
@@ -146,7 +150,7 @@ public class Game {
     /**
      * Initialise new game round.
      */
-    private void initialiseGame() {
+    protected void initialiseGame() {
         currentPlayer = whoGoesFirst();
         displayPlayers();
         board.display(currentPlayer, doublingCube);
@@ -158,7 +162,7 @@ public class Game {
      * @return The player who rolled the highest number.
      */
 
-    private Player whoGoesFirst() {
+    protected Player whoGoesFirst() {
         System.out.println("Rolling to determine the first player...");
 
         int player1roll = dice.rollSingleDie();
@@ -203,7 +207,7 @@ public class Game {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
     }
 
-    private boolean isGameOver() {
+    protected boolean isGameOver() {
         if (board.getBearOffCount(constants.X) == constants.MAX_CHECKERS) {
             winner = player1.getName();
             return true;
@@ -241,7 +245,7 @@ public class Game {
         }
     }
 
-    private void resetGameForNewRound() {
+    protected void resetGameForNewRound() {
         System.out.println("Starting a new game...");
         doublingCube.reset();
         board.reset(); // Reset the board for the next game
@@ -371,7 +375,7 @@ public class Game {
     /**
      * Determines what way the game ended in according to backgammon rules.
      */
-    private void determineResultType() {
+    protected void determineResultType() {
         Player winnerPlayer = winner.equals(player1.getName()) ? player1 : player2;
         Player loserPlayer = winnerPlayer == player1 ? player2 : player1;
 

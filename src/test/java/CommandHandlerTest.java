@@ -30,7 +30,7 @@ public class CommandHandlerTest {
         // Register commands
         commandHandler.registerCommand("roll", new DiceCommand(game));
         commandHandler.registerCommand("hint", new HintCommand(game));
-        commandHandler.registerCommand("moves", new MovesCommand(game));
+        commandHandler.registerCommand("dice", new DiceCommand(game));
         commandHandler.registerCommand("pip", new PipCommand(game));
 
     }
