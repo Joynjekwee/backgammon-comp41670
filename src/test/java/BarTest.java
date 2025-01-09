@@ -41,10 +41,6 @@ public class BarTest {
         assertThrows(IllegalStateException.class, () -> bar.removeFromBar(X));
     }
 
-    @Test
-    public void testInvalidSymbol() {
-       // assertThrows(NullPointerException.class, () -> bar.getCheckers("Z"));
-    }
 
     @Test
     public void testReset() {

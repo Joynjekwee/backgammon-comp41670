@@ -31,6 +31,7 @@ public class DoublingCubeTest {
         assertEquals(player, doublingCube.getOwner());
     }
 
+
     @Test
     public void testAcceptDoubling() {
         Player anotherPlayer = new Player("Bob", "O");

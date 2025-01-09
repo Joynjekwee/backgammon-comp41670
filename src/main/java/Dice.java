@@ -108,10 +108,6 @@ public class Dice {
         }
     }
 
-    // // Helper Test method
-    // public void setDiceValues(int die1, int die2) {
-    // this.die1 = die1;
-    // this.die2 = die2;
-    // }
+
 
 }

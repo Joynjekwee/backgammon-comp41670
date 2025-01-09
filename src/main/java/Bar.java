@@ -15,7 +15,7 @@ public class Bar {
     }
 
     public void initialise() {
-        // Initialize the bar with empty ArrayLists for "X" and "O"
+        // Initialise the bar with empty ArrayLists for "X" and "O"
         bar.put("X", new ArrayList<>());
         bar.put("O", new ArrayList<>());
     }

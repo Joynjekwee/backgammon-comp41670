@@ -1,3 +1,6 @@
+/**
+ * Command to quit the current game.
+ */
 public class QuitCommand implements Command {
     private Game game;
 

@@ -2,6 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Handles the calculation and display of pip counts for players.
+ * Pips represent the score based on checker positions on the board.
+ */
+
 public class PipCalculator {
 
     private Map<Integer, ArrayList<Checker>> board;
@@ -12,11 +17,18 @@ public class PipCalculator {
         this.constants = new Constants();
     }
 
+    /**
+     * Returns the pip number for a position based on the player's perspective.
+     *
+     * @param position the board position.
+     * @param player   the player whose perspective is considered.
+     * @return the pip number for the position.
+     */
+
     private int getPipNumber(int position, Player player) {
         if (player.getSymbol().equals(constants.X)) {
             return position;
         } else {
-            // if(24-position == 0) return 1;
             return 25 - position;
         }
 
@@ -28,7 +40,7 @@ public class PipCalculator {
             int pipNumber = getPipNumber(i, player);
             count++;
             if (pipNumber < 10) {
-                System.out.print(constants.zero + pipNumber);
+                System.out.print(constants.ZERO + pipNumber);
             } else {
                 System.out.print(pipNumber);
             }
@@ -39,7 +51,7 @@ public class PipCalculator {
     }
 
     public void displayTopPipNumbers(Player player) {
-        System.out.print(constants.space);
+        System.out.print(constants.SPACE);
         displayPipNumbers(13, 18, player, false);
         System.out.print("  BAR   ");
         displayPipNumbers(19, 24, player, false);
@@ -56,6 +68,12 @@ public class PipCalculator {
         System.out.println();
     }
 
+    /**
+     * Calculates the total pip count for the specified player.
+     *
+     * @param player the player whose pip count is calculated.
+     * @return the total pip count.
+     */
     public int calculateTotalPipCount(Player player) {
         int totalPipCount = 0;
         String playerSymbol = player.getSymbol();
@@ -78,6 +96,12 @@ public class PipCalculator {
         return calculateTotalPipCount(player);
     }
 
+    /**
+     * Displays the total pip counts for both players.
+     *
+     * @param playerX the first player.
+     * @param playerO the second player.
+     */
     public void displayTotalPipCounts(Player playerX, Player playerO) {
         int totalPipCountX = calculateTotalPipCount(playerX);
         int totalPipCountO = calculateTotalPipCount(playerO);

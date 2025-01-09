@@ -33,6 +33,7 @@ public class MoveExecution {
 
     protected void moveFromBar(String symbol, int end) {
         Checker checker = bar.removeFromBar(symbol);
+        checker.setPosition(end); //update checker position!!!
         board.get(end).add(checker);
         System.out.println("Moved checker from bar to " + end);
     }
@@ -44,6 +45,7 @@ public class MoveExecution {
         }
 
         Checker checker = startCheckers.remove(0);
+        checker.setPosition(25);//it is off the board
         bearOffArea.addChecker(player.getSymbol());
         System.out.println("Checker borne off for player: " + player.getSymbol());
     }
