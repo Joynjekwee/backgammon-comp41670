@@ -8,7 +8,7 @@ public class Checker {
     private int position;
 
 
-    public Checker(String symbol) {
+   public Checker(String symbol) {
         this.symbol = symbol;
     }
 
