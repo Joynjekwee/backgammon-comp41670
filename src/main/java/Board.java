@@ -42,8 +42,8 @@ public class Board {
         }
         bar.initialise();
         bearOffArea.initialise();
-        setupTestBearOffBoard();
-        //setupInitialBoard();
+        //setupTestBearOffBoard();
+        setupInitialBoard();
     }
 
     public void reset() {

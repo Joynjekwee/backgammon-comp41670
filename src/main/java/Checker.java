@@ -26,7 +26,4 @@ public class Checker {
     public void setPosition(int position) {
         this.position = position;
     }
-
-
-
 }
