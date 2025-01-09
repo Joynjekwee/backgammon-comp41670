@@ -65,6 +65,11 @@ public class Board {
         if (!board.containsKey(position)) {
             throw new IllegalArgumentException("Invalid position: " + position);
         }
+        // If the checker has a default position (-1), set it to the correct one
+        if (checker.getPosition() == -1) {
+            checker.setPosition(position);
+        }
+        System.out.println("Adding checker to position " + position + ": " + checker.getSymbol() + " with position " + checker.getPosition());
         board.get(position).add(checker);
     }
 
@@ -148,9 +153,17 @@ public class Board {
         if (board.get(start).isEmpty()) {
             throw new IllegalStateException("No checkers at starting position.");
         }
+
         Checker check = board.get(start).remove(0);
-        checker.setPosition(end); // Update the checker's position
+        // Ensure the checker has a valid position
+        if (check.getPosition() == -1) {
+            System.out.println("Checker at start position has an uninitialized position. Initializing...");
+            check.setPosition(start); // Initialize to the starting position
+        }
+       // System.out.println("Moving checker " + check.getSymbol() + " from position " + start + " to " + end);
+        check.setPosition(end); // Update the checker's position
         board.get(end).add(check);
+
     }
 
     public void moveCheckerToBar(String symbol, int position) {
