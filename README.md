@@ -22,34 +22,6 @@ This is a **Backgammon game implementation** written in Java. The project uses *
 ### For Building and Running Tests
 Maven
 
-### Project Structure
-
-backgammon-project/
-│
-├── pom.xml               # Maven configuration file
-├── README.md             # Project documentation
-├── src/
-│   ├── main/
-│   │   └── java/
-│   │       ├── Board.java
-│   │       ├── Checker.java
-│   │       ├── Constants.java
-│   │       ├── Dice.java
-│   │       ├── Game.java
-│   │       ├── Move.java
-│   │       ├── PipCalculator.java
-│   │       ├── Player.java
-│   │       └── Validation.java
-│   └── test/
-│       └── java/
-│           └── Main.java    # Unit tests
-├── .gitignore            # Files ignored by Git
-
-### Compile the Project
-To compile the project, run:
-
-mvn compile
-
 ### How the Game Works
 1. Start the Game:
 Players are prompted to roll the dice to determine who goes first.
@@ -62,3 +34,5 @@ Checkers can be moved onto the board, to the bar, or borne off.
 3. Winning:
 The first player to bear off all their checkers wins the game.
 
+4. Extra Features:
+Inputting hint as a command gives full list of available commands to execute
