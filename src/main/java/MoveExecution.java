@@ -15,6 +15,19 @@ public class MoveExecution {
 
     public void executeMove(int start, int end, Player player, Constants c) {
         if (start == 0) { // Moving from the bar
+            // Check if destination has opponent's checker and handle it
+            ArrayList<Checker> destination = board.get(end);
+            String opponentSymbol = player.getSymbol().equals(c.X) ? c.O : c.X;
+            if (!destination.isEmpty() &&  destination.get(0).getSymbol().equals(opponentSymbol)) {
+                if (destination.size() == 1) { // Single opponent checker - hit it
+                    Checker hitChecker = destination.remove(0);
+                    bar.addToBar(hitChecker.getSymbol(), hitChecker);
+                    System.out.println("Hit opponent's checker and sent it to the bar!");
+                } else {
+                    System.out.println("Invalid move: Cannot move to a point occupied by multiple opponent checkers.");
+                    return; // Invalid move, do nothing
+                }
+            }
             moveFromBar(player.getSymbol(), end);
             return;
         }

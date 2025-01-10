@@ -42,8 +42,8 @@ public class Board {
         }
         bar.initialise();
         bearOffArea.initialise();
-        setupTestBearOffBoard();
-        //setupInitialBoard();
+        //setupTestBearOffBoard();
+         setupInitialBoard();
     }
 
     public void reset() {
@@ -145,7 +145,7 @@ public class Board {
         return legalMovements.isMoveValid(start, end, player);
     }
 
-    public void moveChecker(int start, int end) {
+    /*public void moveChecker(int start, int end) {
 
         if (!board.containsKey(start) || !board.containsKey(end)) {
             throw new IllegalArgumentException("Invalid board position");
@@ -164,7 +164,41 @@ public class Board {
         check.setPosition(end); // Update the checker's position
         board.get(end).add(check);
 
+    }*/
+    private void moveChecker(int start, int end, Player player) {
+        ArrayList<Checker> destinationCheckers = board.get(end);
+        String playerSymbol = player.getSymbol();
+
+        // If the destination is not empty, validate the move
+        if (!destinationCheckers.isEmpty()) {
+            String destinationSymbol = destinationCheckers.get(0).getSymbol();
+
+            // Check if the destination contains opponent's checkers
+            if (!destinationSymbol.equals(playerSymbol)) {
+                // Prevent move if the point is occupied by two or more opponent checkers
+                if (destinationCheckers.size() > 1) {
+                    System.out.println("Invalid move: Cannot move to a point occupied by multiple opponent checkers.");
+                    return; // Exit the method
+                }
+
+                // Otherwise, hit the opponent's blot
+                Checker hitChecker = destinationCheckers.remove(0);
+                bar.addToBar(hitChecker.getSymbol(), hitChecker);
+                System.out.println("Checker " + hitChecker.getSymbol() + " hit and sent to the bar!");
+            }
+        }
+
+        // Move the checker to the destination
+        if (!board.get(start).isEmpty()) {
+            Checker movingChecker = board.get(start).remove(0); // Remove from the start point
+            movingChecker.setPosition(end); // Update the checker's position
+            board.get(end).add(movingChecker); // Add to the destination point
+            System.out.println("Checker " + movingChecker.getSymbol() + " moved from " + start + " to " + end);
+        } else {
+            System.out.println("Invalid move: No checkers at starting position " + start);
+        }
     }
+
 
     public void moveCheckerToBar(String symbol, int position) {
         if (!board.containsKey(position) || board.get(position).isEmpty()) {
