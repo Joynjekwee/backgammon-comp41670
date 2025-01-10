@@ -146,7 +146,7 @@ public class LegalMovements {
             }
 
             // Handle bear-off logic
-            if (canWeBearOff(player,diceValues)) {
+            if (canWeBearOff(player, diceValues)) {
                 int homeStart = player.getSymbol().equals("X") ? 1 : 19;
                 int homeEnd = player.getSymbol().equals("X") ? 6 : 24;
 
@@ -167,6 +167,12 @@ public class LegalMovements {
                 }
             }
         }
+
+        // Remove all bear-off moves if canWeBearOff is false
+        if (!canWeBearOff(player, diceValues)) {
+            moves.removeIf(move -> move.getEndPos() == 25);
+        }
+
         return new ArrayList<>(moves);
     }
 
