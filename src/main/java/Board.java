@@ -69,7 +69,6 @@ public class Board {
         if (checker.getPosition() == -1) {
             checker.setPosition(position);
         }
-        System.out.println("Adding checker to position " + position + ": " + checker.getSymbol() + " with position " + checker.getPosition());
         board.get(position).add(checker);
     }
 
@@ -145,27 +144,8 @@ public class Board {
         return legalMovements.isMoveValid(start, end, player);
     }
 
-    /*public void moveChecker(int start, int end) {
 
-        if (!board.containsKey(start) || !board.containsKey(end)) {
-            throw new IllegalArgumentException("Invalid board position");
-        }
-        if (board.get(start).isEmpty()) {
-            throw new IllegalStateException("No checkers at starting position.");
-        }
-
-        Checker check = board.get(start).remove(0);
-        // Ensure the checker has a valid position
-        if (check.getPosition() == -1) {
-            System.out.println("Checker at start position has an uninitialized position. Initializing...");
-            check.setPosition(start); // Initialize to the starting position
-        }
-       // System.out.println("Moving checker " + check.getSymbol() + " from position " + start + " to " + end);
-        check.setPosition(end); // Update the checker's position
-        board.get(end).add(check);
-
-    }*/
-    private void moveChecker(int start, int end, Player player) {
+    protected void moveChecker(int start, int end, Player player) {
         ArrayList<Checker> destinationCheckers = board.get(end);
         String playerSymbol = player.getSymbol();
 
@@ -208,7 +188,6 @@ public class Board {
 
         Checker checker = board.get(position).remove(0);
         bar.addToBar(symbol, checker);
-        // System.out.println("Checker moved to bar: " + symbol);
     }
 
     public void moveCheckerToBoard(String symbol, int end) {
@@ -216,11 +195,11 @@ public class Board {
         board.get(end).add(checker);
         System.out.println("Moved checker from bar " + " to " + (end));
     }
-
+//make a move happen see the move execution class different scenarios covered
     public void executeMove(int start, int end, Player player) {
         moveExecution.executeMove(start, end, player, c);
     }
-
+//what checkers does the current player have left on the board?
     public ArrayList<Checker> getCurrentPlayerCheckers(Player player) {
         ArrayList<Checker> checkers = new ArrayList<>();
         for (Map.Entry<Integer, ArrayList<Checker>> entry : board.entrySet()) {
@@ -253,7 +232,7 @@ public class Board {
     public boolean canWeBearOff(Player player, List<Integer> diceValues) {
         return legalMovements.canWeBearOff(player, diceValues);
     }
-
+//are there checkers in the players home area??
     public boolean hasCheckerInHomeArea(Player loserPlayer, Player winnerPlayer) {
         int homeStart, homeEnd;
 

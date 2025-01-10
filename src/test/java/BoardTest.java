@@ -30,7 +30,7 @@ public class BoardTest {
         board.reset();
         board.getCheckersAt(1).clear(); // clear position 1 to ensure no leftover checkers
         board.addChecker(1, new Checker("O", 1)); // Add a checker with symbol "O" to position 1
-        board.moveChecker(1, 5);
+        board.moveChecker(1, 5,playerO);
         assertEquals(1, board.getCheckersAt(5).size());
         assertEquals(0, board.getCheckersAt(1).size());
         assertEquals("O", board.getCheckersAt(5).get(0).getSymbol());

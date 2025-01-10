@@ -6,13 +6,22 @@ public class LegalMovements {
     private final BearOffArea bearOffArea;
     private final Constants constants;
 
+    /**
+     * Constructor to initialize the LegalMovements class with necessary game components.
+     *
+     * @param board The game board representation.
+     * @param bar The bar area to store checkers hit by opponents.
+     * @param bearOffArea The area for bearing off checkers.
+     * @param constants Constants defining the game's rules.
+     */
+
     public LegalMovements(Board board, Bar bar, BearOffArea bearOffArea, Constants constants) {
         this.board = board;
         this.bar = bar;
         this.bearOffArea = bearOffArea;
         this.constants = constants;
     }
-
+//Validates whether a move from start to end is allowed for a given player
     public boolean isMoveValid(int start, int end, Player player) {
         boolean withinBounds = isWithinBounds(end);
         boolean startValid = isStartValid(start, player);
@@ -46,7 +55,13 @@ public class LegalMovements {
 
         return opponentCheckerCount <= 1;
     }
-
+    /**
+     * Generates possible moves to the board for checkers currently on the bar.
+     *
+     * @param diceValues The values of the dice rolled.
+     * @param player The player making the moves.
+     * @return A list of possible move options from the bar.
+     */
     public List<MoveOption> canWeMoveCheckersToBoard(List<Integer> diceValues, Player player) {
         Set<MoveOption> movesFromBar = new HashSet<>();
         String playerSymbol = player.getSymbol();
@@ -85,7 +100,10 @@ public class LegalMovements {
 
         return new ArrayList<>(movesFromBar);
     }
-
+    /**
+     * Checks if a player is eligible to bear off checkers.
+     * @return True if the player can bear off; false otherwise.
+     */
     public boolean canWeBearOff(Player player, List<Integer> diceValues) {
         String playerSymbol = player.getSymbol();
         int homeStart, homeEnd;
@@ -128,9 +146,11 @@ public class LegalMovements {
 
 
 
-
+    /**
+     * Generates a list of all legal moves that the current player can make based on the dice values rolled.
+     * @return A list of all possible legal moves the player can make.
+     */
     public List<MoveOption> getListOfLegalMoves(Player player, List<Integer> diceValues) {
-        System.out.println("Generating legal moves for player: " + player.getSymbol());
         System.out.println("Dice values: " + diceValues);
 
         Set<MoveOption> moves = new HashSet<>();
@@ -181,7 +201,7 @@ public class LegalMovements {
 
 
 
-
+//is it a double?
     private boolean isDoubles(List<Integer> diceValues) {
         if (diceValues.size() != 4)
             return false;
@@ -212,6 +232,10 @@ public class LegalMovements {
         return !bar.getCheckers(player.getSymbol()).isEmpty();
     }
 
+    /**
+     * Generates a list of potential legal moves for a given checker starting at a specified position.
+     * @return A list of all potential legal moves the checker can make from the given position.
+     */
 
     public List<MoveOption> canWeMakeAMove(int start, List<Integer> diceValues, Player player) {
         Set<MoveOption> potentialMoves = new HashSet<>();
@@ -240,9 +264,10 @@ public class LegalMovements {
                     List<Integer> diceUsed = generateDiceUsedForSum(d, sum); // Generate dice used for this move
                     MoveOption move = new MoveOption(start, newPos, diceUsed);
                     potentialMoves.add(move);
-                } else {
-                    System.out.println("Invalid or out-of-bounds move: NewPos=" + newPos);
                 }
+                /*else {
+                    System.out.println("Invalid or out-of-bounds move: NewPos=" + newPos);
+                }*/
             }
         } else {
             // Handle non-doubles case: single and combined dice moves
