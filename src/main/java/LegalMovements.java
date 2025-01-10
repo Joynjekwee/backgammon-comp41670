@@ -193,6 +193,14 @@ public class LegalMovements {
             moves.removeIf(move -> move.getEndPos() == 25);
         }
 
+        // Filter out illegal moves where there is no checker at the start position
+        moves.removeIf(move -> {
+            int startPos = move.getStartPos();
+            ArrayList<Checker> startCheckers = board.getCheckersAt(startPos);
+            return startCheckers.isEmpty() || !startCheckers.get(0).getSymbol().equals(player.getSymbol());
+        });
+
+
         return new ArrayList<>(moves);
     }
 
