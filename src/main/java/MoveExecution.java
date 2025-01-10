@@ -15,6 +15,8 @@ public class MoveExecution {
     }
     // Executes a move from a starting position to an ending position, handling varying scenarios
     public void executeMove(int start, int end, Player player, Constants c) {
+
+
         if (start == 0) { // Moving from the bar
             // Check if destination has opponent's checker and handle it
             ArrayList<Checker> destination = board.get(end);

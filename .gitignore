@@ -19,5 +19,6 @@
 # IntelliJ IDEA directories
 /out/
 bin/
+META-INF/
 
 
