@@ -428,11 +428,7 @@ public class Game {
     }
 
     public void addCommandToQueue(String command) {
-        if (testMode) {
             commandQueue.add(command);
-        } else {
-            System.out.println("Test mode is not enabled. Please enable test mode before adding commands.");
-        }
     }
 
     private void processTestCommands() {
