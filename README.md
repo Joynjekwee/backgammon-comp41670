@@ -10,6 +10,17 @@ This is a **Backgammon game implementation** written in Java. The project uses *
 - Comprehensive unit tests using JUnit.
 - Maven-based project structure for easy dependency management and builds.
 
+## My Contributions
+This project was built collaboratively as part of COMP41670 - Software Engineering (UCD).  
+My individual contributions included:  
+- Implementing the **Roll Dice** functionality.  
+- Displaying the **current player** during gameplay.  
+- Developing logic to select **all legal moves**.  
+- Adding the **Dice command** for command-line interaction.  
+- Implementing **name entry** and **match length configuration**.  
+- Building the **New Match setup** feature.  
+
+
 ---
 
 ## Prerequisites
